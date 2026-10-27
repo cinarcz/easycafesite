@@ -1,0 +1,211 @@
+<title>Easy Cafe Menü</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* Concept: a phone-first dark menu, photo tiles in a 3-column grid under a brush-script cover, like a cafe's wall board. Amber is the only accent. */
+:root{
+  --bg:#0E0F12;
+  --surface:#17191E;
+  --surface2:#20232A;
+  --ink:#F5F1EA;
+  --mute:#A9A59C;
+  --line:#2C2F37;
+  --accent:#FF9A1F;
+  --on-accent:#1A1000;
+  --script:'Kaushan Script','Brush Script MT',cursive;
+  --body:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,'DejaVu Sans Mono',monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:auto}
+body{margin:0;background:var(--bg);color:var(--ink);font:500 16px/1.45 var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:40;background:var(--bg)}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.app{max-width:520px;margin:0 auto;min-height:100vh;background:var(--bg);position:relative;padding-bottom:calc(92px + env(safe-area-inset-bottom,0px));box-shadow:0 0 0 1px var(--line)}
+.view{display:none}.view.on{display:block;animation:vin .32s cubic-bezier(.2,.8,.2,1)}
+@keyframes vin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ---- cover ---- */
+.cover{position:relative;height:272px;overflow:hidden;background:
+  radial-gradient(90% 120% at 82% 0%,rgba(255,154,31,.5),transparent 60%),
+  radial-gradient(70% 90% at 0% 100%,rgba(190,70,20,.35),transparent 65%),
+  linear-gradient(160deg,#2A1B12,#14100D 70%)}
+.cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cover::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,15,18,.25),rgba(14,15,18,.1) 40%,var(--bg))}
+.steam{position:absolute;right:26px;bottom:34px;width:150px;height:150px;opacity:.9;z-index:1}
+.steam .cup{fill:none;stroke:#FFC46B;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+.steam .sm{fill:none;stroke:#FFD79A;stroke-width:3;stroke-linecap:round;opacity:.0;animation:rise 3.6s ease-in-out infinite}
+.steam .sm:nth-of-type(2){animation-delay:1.2s}.steam .sm:nth-of-type(3){animation-delay:2.4s}
+@keyframes rise{0%{opacity:0;transform:translateY(8px)}35%{opacity:.8}100%{opacity:0;transform:translateY(-14px)}}
+.brand{position:absolute;left:max(20px,env(safe-area-inset-left,0px));top:calc(env(safe-area-inset-top,0px) + 46px);z-index:2}
+.brand h1{margin:0;font:400 58px/.9 var(--script);color:#fff;text-shadow:0 4px 22px rgba(0,0,0,.45);transform:rotate(-4deg);transform-origin:left bottom}
+.brand h1 span{display:block}
+.brand h1 span+span{margin-left:34px;color:var(--accent)}
+.brand p{margin:20px 0 0;display:flex;align-items:center;gap:10px;font:600 11px/1 var(--mono);letter-spacing:.2em;color:#E9E2D6}
+.brand p::before,.brand p::after{content:"";width:22px;height:2px;background:var(--accent)}
+.langbtn{position:absolute;z-index:3;right:max(16px,env(safe-area-inset-right,0px));top:calc(env(safe-area-inset-top,0px) + 14px);display:flex;align-items:center;gap:8px;height:40px;padding:0 14px;border-radius:12px;background:rgba(20,22,26,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.16);font:600 13px/1 var(--mono);letter-spacing:.06em}
+.langbtn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+
+/* ---- grid ---- */
+.sec{padding:6px max(14px,env(safe-area-inset-right,0px)) 0 max(14px,env(safe-area-inset-left,0px))}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.tile{position:relative;aspect-ratio:1/1;border-radius:18px;overflow:hidden;text-align:left;background:var(--surface);isolation:isolate;transition:transform .18s}
+.tile:active{transform:scale(.97)}
+.tile .ph{position:absolute;inset:0;display:grid;place-items:center;font-size:46px;padding-bottom:18px}
+.tile .ph i{font-style:normal;filter:drop-shadow(0 8px 10px rgba(0,0,0,.45));transform:rotate(-8deg)}
+.tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.tile::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 38%,rgba(8,8,10,.86));z-index:1}
+.tile b{position:absolute;z-index:2;left:10px;right:8px;bottom:9px;font:800 13.5px/1.15 var(--body);letter-spacing:-.005em;text-shadow:0 1px 8px rgba(0,0,0,.6);overflow-wrap:anywhere}
+.tile small{position:absolute;z-index:2;right:8px;top:8px;min-width:22px;height:22px;padding:0 7px;border-radius:99px;background:rgba(14,15,18,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);font:600 11px/22px var(--mono);text-align:center}
+.g0{background:linear-gradient(145deg,#6A3B1E,#2A180D)}.g1{background:linear-gradient(145deg,#7A2E27,#2B1110)}.g2{background:linear-gradient(145deg,#6B5420,#2A2109)}
+.g3{background:linear-gradient(145deg,#2F5A3C,#10241A)}.g4{background:linear-gradient(145deg,#3B4C7A,#141B30)}.g5{background:linear-gradient(145deg,#6D3A5E,#2A1424)}
+.tile.rv{opacity:0;transform:translateY(16px)}.tile.rv.in{opacity:1;transform:none;transition:opacity .5s,transform .5s cubic-bezier(.2,.8,.2,1)}
+.note{padding:22px 20px 0;color:var(--mute);font:500 12px/1.5 var(--mono);text-align:center}
+
+/* ---- category + search ---- */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;display:flex;align-items:center;gap:12px;padding:10px max(14px,env(safe-area-inset-right,0px)) 10px max(14px,env(safe-area-inset-left,0px));background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.back{flex:none;width:40px;height:40px;border-radius:12px;background:var(--surface2);display:grid;place-items:center}
+.back svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.top h2{margin:0;font:800 19px/1.2 var(--body);letter-spacing:-.01em;min-width:0;overflow-wrap:anywhere}
+.top .cnt{margin-left:auto;flex:none;font:600 12px/1 var(--mono);color:var(--mute)}
+.band{position:relative;height:150px;margin:14px max(14px,env(safe-area-inset-right,0px)) 6px max(14px,env(safe-area-inset-left,0px));border-radius:22px;overflow:hidden;display:grid;place-items:center}
+.band img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.band .em{font-size:68px;filter:drop-shadow(0 10px 14px rgba(0,0,0,.45));transform:rotate(-8deg);position:relative;z-index:1}
+.band::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0),rgba(8,8,10,.45))}
+.list{display:grid;gap:0;padding:4px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
+.row{display:flex;align-items:baseline;gap:12px;padding:15px 0;border-bottom:1px dashed var(--line)}
+.row .nm{flex:1 1 auto;min-width:0;font:700 16px/1.3 var(--body);overflow-wrap:anywhere}
+.row .nm small{display:block;margin-top:3px;font:600 11px/1.3 var(--mono);letter-spacing:.06em;color:var(--mute);text-transform:uppercase}
+.row .pr{flex:none;font:600 15px/1.2 var(--mono);color:var(--accent);font-variant-numeric:tabular-nums;white-space:nowrap}
+.searchbox{display:flex;align-items:center;gap:10px;flex:1;min-width:0;height:44px;padding:0 14px;border-radius:14px;background:var(--surface2);border:1px solid var(--line)}
+.searchbox svg{flex:none;width:18px;height:18px;fill:none;stroke:var(--mute);stroke-width:2;stroke-linecap:round}
+.searchbox input{flex:1;min-width:0;border:0;background:none;color:var(--ink);font:600 16px/1 var(--body);outline:0}
+.searchbox input::placeholder{color:var(--mute)}
+.empty{padding:46px 24px;text-align:center;color:var(--mute)}
+
+/* ---- bottom bar + language sheet ---- */
+.bar{position:fixed;z-index:35;left:50%;transform:translateX(-50%);bottom:0;width:min(100%,520px);display:flex;justify-content:space-around;padding:10px max(10px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px));background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line)}
+.bar button{flex:1;display:grid;justify-items:center;gap:4px;padding:6px 0;border-radius:14px;color:var(--mute);font:700 11px/1.1 var(--body)}
+.bar svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.bar button[aria-current=page]{color:var(--accent)}
+.sheet{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.55)}
+.sheet[hidden]{display:none}
+.sheet .box{width:min(100%,520px);padding:18px max(16px,env(safe-area-inset-right,0px)) calc(18px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));border-radius:26px 26px 0 0;background:var(--surface);border:1px solid var(--line);border-bottom:0;animation:sh .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes sh{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.sheet h3{margin:2px 0 14px;font:800 17px/1.2 var(--body)}
+.opt{width:100%;display:flex;align-items:center;gap:14px;padding:14px;margin-bottom:8px;border-radius:16px;background:var(--surface2);border:1.5px solid transparent;text-align:left;font:700 16px/1.2 var(--body)}
+.opt code{font:600 12px/1 var(--mono);color:var(--accent);width:28px}
+.opt[aria-checked=true]{border-color:var(--accent)}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.tile.rv{opacity:1;transform:none}}
+@media(max-width:380px){.brand h1{font-size:50px}.tile b{font-size:12.5px}}
+</style>
+
+<div class="app" id="app">
+  <section class="view on" id="v-home">
+    <header class="cover">
+      <img src="foto/kapak.jpg" alt="" onerror="this.remove()">
+      <svg class="steam" viewBox="0 0 150 150" aria-hidden="true"><path class="sm" d="M52 52c-8-8 8-14 0-24"/><path class="sm" d="M76 48c-8-8 8-14 0-24"/><path class="sm" d="M100 52c-8-8 8-14 0-24"/><path class="cup" d="M36 66h74v30a26 26 0 0 1-26 26H62a26 26 0 0 1-26-26zM110 74h8a14 14 0 0 1 0 28h-8M44 132h58"/></svg>
+      <div class="brand"><h1><span>Easy</span><span>Cafe</span></h1><p data-i="tag"></p></div>
+      <button class="langbtn" id="langBtn" type="button" aria-haspopup="dialog"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg><span id="langCode">TR</span></button>
+    </header>
+    <div class="sec"><div class="grid" id="grid"></div></div>
+    <p class="note" data-i="price"></p>
+    <p class="note" style="padding-top:8px">+7 707 988 1010</p>
+  </section>
+
+  <section class="view" id="v-cat">
+    <div class="top"><button class="back" id="back1" type="button" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><h2 id="catTitle"></h2><span class="cnt" id="catCnt"></span></div>
+    <div class="band" id="catBand"></div>
+    <div class="list" id="catList"></div>
+  </section>
+
+  <section class="view" id="v-search">
+    <div class="top"><button class="back" id="back2" type="button" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <label class="searchbox" for="q"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" type="search" autocomplete="off" enterkeyhint="search"></label></div>
+    <div class="list" id="resList"></div>
+  </section>
+
+  <nav class="bar" aria-label="Menu">
+    <button type="button" id="nHome" aria-current="page"><svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg><span data-i="home"></span></button>
+    <button type="button" id="nSearch"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span data-i="search"></span></button>
+    <button type="button" id="nLang"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg><span data-i="lang"></span></button>
+  </nav>
+
+  <div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="shT"><div class="box"><h3 id="shT" data-i="lang"></h3><div id="opts" role="radiogroup"></div></div></div>
+</div>
+
+<script>
+const DATA={"C":[{"k":"kahvalti","e":"🍳","n":["Kahvaltı","Завтраки","Таңғы Астар","Breakfast"]},{"k":"yumurta","e":"🥚","n":["Yumurta & Omlet","Яичницы и Омлеты","Жұмыртқа","Egg Dishes"]},{"k":"botka","e":"🥣","n":["Botkalar","Каши","Ботқалар","Porridges"]},{"k":"corba","e":"🍲","n":["Çorbalar","Супы","Сорпалар","Soups"]},{"k":"aperatif","e":"🍟","n":["Aperatifler","Закуски","Тіскебасарлар","Appetizers"]},{"k":"salata","e":"🥗","n":["Salatalar","Салаты","Салаттар","Salads"]},{"k":"doner","e":"🌯","n":["Dönerler","Донеры","Дөнерлер","Doners"]},{"k":"pide","e":"🛶","n":["Gözleme & Pide","Гезлеме и Пиде","Гөзлеме & Пиде","Gozleme & Pide"]},{"k":"kofta","e":"🧆","n":["Köfteler","Котлеты","Котлеталар","Meatballs"]},{"k":"mangal","e":"🍢","n":["Mangal & Kebap","Мангал и Кебабы","Мангал мен Кәуап","Mangal & Kebab"]},{"k":"steak","e":"🥩","n":["Steaks","Стейки","Стейктер","Steaks"]},{"k":"sicakyemek","e":"🍛","n":["Sıcak Yemekler","Горячие блюда","Ыстық Тағамдар","Hot Dishes"]},{"k":"pizza","e":"🍕","n":["Pizzalar","Пицца","Пиццалар","Pizzas"]},{"k":"pasta","e":"🍝","n":["Makarnalar","Паста","Пасталар","Pastas"]},{"k":"streetfood","e":"🌮","n":["Sokak Lezzetleri","Стрит-фуд","Стрит-фуд","Street Food"]},{"k":"burger","e":"🍔","n":["Burgerler","Бургеры","Бургерлер","Burgers"]},{"k":"tavuk","e":"🍗","n":["Tavuk Yemekleri","Блюда из курицы","Тауық Еті","Chicken Dishes"]},{"k":"dogu","e":"🥟","n":["Doğu Mutfağı","Восточная кухня","Шығыс Тағамдары","Oriental Cuisine"]},{"k":"cocuk","e":"👧","n":["Çocuk Menüsü","Детское меню","Балалар Мәзірі","Kids Menu"]},{"k":"tatli","e":"🍰","n":["Tatlılar","Десерты","Десерттер","Desserts"]},{"k":"firin","e":"🥐","n":["Fırın Ürünleri","Выпечка","Нан Өнімдері","Bakery"]},{"k":"balbuzak","e":"🍦","n":["Dondurma","Мороженое","Балмұздақ","Ice Cream"]},{"k":"cay","e":"🫖","n":["Çaylar","Чай","Шәйлер","Teas"]},{"k":"kahve","e":"☕","n":["Kahveler","Кофе","Кофе","Coffees"]},{"k":"soguk","e":"🥤","n":["Soğuk İçecekler","Холодные напитки","Салқын Сусындар","Cold Drinks"]}],"M":[[0,["Serpme Türk Kahvaltısı","Большой турецкий завтрак","Серпме таңғы ас","Turkish Spread Breakfast"],15900],[0,["Değirmen Özel Kahvaltı","Фирменный завтрак ассорти","Дегирмен таңғы асы","Special Assorted Breakfast"],11900],[0,["Tepsi Kahvaltısı (2 Kişilik)","Завтрак на подносе","Табақтағы таңғы ас","Tray Breakfast (For 2)"],8500],[0,["Klasik Kahvaltı Tabağı","Классический завтрак","Классикалық таңғы ас","Classic Breakfast Plate"],3800],[0,["Simitli Kahvaltı Tabağı","Завтрак с симитом","Симит таңғы асы","Simit Breakfast Plate"],3200],[1,["Menemen","Менемен","Менемен","Menemen"],2400],[1,["Sucuklu Yumurta","Яичница с суджуком","Шұжықпен жұмыртқа","Eggs with Sujuk"],2600],[1,["Kavurmalı Yumurta","Яичница с кавурмой","Қуырылған етпен жұмыртқа","Eggs with Roasted Meat"],3200],[1,["Kaşarlı Omlet","Омлет с сыром","Ірімшік қосылған омлет","Cheese Omelette"],2200],[1,["Karışık Omlet","Смешанный омлет","Аралас омлет","Mixed Omelette"],2700],[2,["Sütlü Yulaf Lapası","Овсяная каша на молоке","Сүтті сұлы ботқасы","Oatmeal Porridge"],1800],[2,["Sütlü Pirinç Lapası","Рисовая каша","Күріш ботқасы","Rice Porridge"],1800],[2,["İrmik Lapası","Манная каша","Ұнтақ ботқасы","Semolina Porridge"],1700],[2,["Meyveli Yulaf Lapası","Овсянка с фруктами","Жемісті сұлы ботқасы","Oatmeal with Fruits"],2200],[3,["Mercimek Çorbası","Чечевичный суп","Жасымық сорпасы","Lentil Soup"],1600],[3,["Ezogelin Çorbası","Суп Эзогелин","Эзогелин сорпасы","Ezogelin Soup"],1600],[3,["Tavuk Suyu Çorbası","Куриный суп","Тауық сорпасы","Chicken Soup"],1800],[3,["İşkembe Çorbası","Суп Ишкембе","Ішек-қарын сорпасы","Tripe Soup"],2500],[3,["Kelle Paça Çorbası","Суп Келле-пача","Келле-пача сорпасы","Head and Trotter Soup"],2800],[4,["Patates Kızartması","Картофель фри","Фри картобы","French Fries"],1400],[4,["Elma Dilim Patates","Картофельные дольки","Ауылшаруашылық картобы","Potato Wedges"],1600],[4,["Sigara Böreği (6 Adet)","Сигара бёрек","Сигара бөрегі","Cheese Rolls (6 pcs)"],1900],[4,["Tavuk Nuggets (8 Adet)","Куриные наггетсы","Тауық наггетстері","Chicken Nuggets (8 pcs)"],2100],[4,["Humus","Хумус","Хумус","Hummus"],1800],[5,["Çoban Salata","Салат Чобан","Шопан салаты","Shepherd Salad"],1900],[5,["Tavuklu Sezar Salata","Цезарь с курицей","Тауық қосылған Цезарь","Chicken Caesar Salad"],2900],[5,["Yunan Salatası (Grek)","Греческий салат","Грек салаты","Greek Salad"],2600],[5,["Çıtır Patlıcanlı Salata","Салат с хрустящими баклажанами","Қытырлақ баялды салаты","Crispy Eggplant Salad"],2650],[5,["Gavurdağı Salatası","Салат Гавурдагы","Гавурдағы салаты","Walnut Tomato Salad"],2400],[6,["Tavuk Döner Dürüm","Куриный донер в лаваше","Тауық дөнері (лавашта)","Chicken Doner Wrap"],1900],[6,["Et Döner Dürüm","Говяжий донер в лаваше","Сиыр етінен дөнер (лавашта)","Beef Doner Wrap"],2400],[6,["Porsiyon Tavuk Döner","Куриный донер на тарелке","Тәрелкедегі тауық дөнері","Chicken Doner on Plate"],2900],[6,["Porsiyon Et Döner","Говяжий донер на тарелке","Тәрелкедегі ет дөнері","Beef Doner on Plate"],3600],[6,["İskender Kebap","Искендер кебаб","Искендер дөнер","Iskender Kebab"],4200],[6,["Ekmek Arası Et Döner","Говяжий донер в батоне","Нандағы ет дөнері","Beef Doner Sandwich"],2400],[7,["Kaşarlı Pide","Пиде с сыром","Ірімшік қосылған пиде","Cheese Pide"],2800],[7,["Kıymalı Pide","Пиде с фаршем","Тартылған етпен пиде","Minced Meat Pide"],3100],[7,["Kuşbaşılı Pide","Пиде с рубленым мясом","Тұралған етпен пиде","Cubed Meat Pide"],3500],[7,["Karışık Pide","Смешанное пиде","Аралас пиде","Mixed Pide"],3700],[7,["Lahmacun","Лахмаджун","Лахмаджун","Lahmacun"],1300],[7,["Kaşarlı Gözleme","Гезлеме с сыром","Ірімшік қосылған гөзлеме","Cheese Gozleme"],2100],[8,["İnegöl Köfte","Инегёль кёфте","Инегол котлеті","Inegol Meatballs"],3400],[8,["Kaşarlı Köfte","Кёфте с сыром","Ірімшік қосылған котлет","Cheese Meatballs"],3700],[8,["Izgara Kasap Köfte","Котлеты на гриле","Грильдегі котлеттер","Grilled Butcher Meatballs"],3500],[8,["İzmir Köfte","Измир кёфте","Измир котлеті","Izmir Meatballs"],3600],[9,["Adana Kebap","Адана кебаб","Адана кебаб","Adana Kebab"],3600],[9,["Urfa Kebap","Урфа кебаб","Урфа кебаб","Urfa Kebab"],3600],[9,["Kuzu Şiş","Шашлык из баранины","Қозы кәуабы","Lamb Shish"],4200],[9,["Tavuk Şiş","Куриный шашлык","Тауық кәуабы","Chicken Shish"],3100],[9,["Izgara Tavuk Kanat","Куриные крылышки на мангале","Тауық қанаттары","Grilled Chicken Wings"],3300],[9,["Karışık Kebap (2 Kişilik)","Ассорти кебаб (на 2 персоны)","Аралас кәуап (2 адамға)","Mixed Kebab (For 2)"],9500],[10,["Ribeye Steak","Стейк Рибай","Рибай стейк","Ribeye Steak"],8900],[10,["T-Bone Steak","Стейк Ти-бон","Ти-бон стейк","T-Bone Steak"],9500],[10,["Dana Bonfile (Lokum)","Медальоны из говядины","Сиыр медальондары","Beef Medallions"],7800],[10,["Kuzu Kafes / Pirzola","Каре ягненка","Қозы қабырғасы","Rack of Lamb"],7500],[11,["Etli Sac Kavurma","Садж кавурма из говядины","Сиыр етінен садж кавурма","Beef Saj Kavurma"],3900],[11,["Tavuklu Sac Kavurma","Садж кавурма из курицы","Тауық етінен садж кавурма","Chicken Saj Kavurma"],3300],[11,["Etli Fajita","Фахитас с говядиной","Фахитас (сиыр етімен)","Beef Fajitas"],4400],[11,["Ali Nazik Kebap","Али Назик кебаб","Әли Назик кебаб","Ali Nazik Kebab"],4300],[12,["Pizza Margarita","Пицца Маргарита","Маргарита пиццасы","Margherita Pizza"],2800],[12,["Pizza Pepperoni","Пицца Пепперони","Пепперони пиццасы","Pepperoni Pizza"],3400],[12,["Karışık Pizza","Пицца Ассорти","Аралас пицца","Mixed Supreme Pizza"],3700],[12,["4 Peynirli Pizza","Пицца 4 сыра","Төрт ірімшік пиццасы","Four Cheese Pizza"],3500],[12,["Sezar Pizza","Пицца Цезарь","Цезарь пиццасы","Caesar Pizza"],3600],[13,["Fettuccine Alfredo","Феттучини Альфредо","Феттучини Альфредо","Fettuccine Alfredo"],3100],[13,["Spagetti Bolonez","Спагетти Болоньезе","Спагетти Болоньезе","Spaghetti Bolognese"],3100],[13,["Penne Arrabbiata","Пенне Арабьята","Пенне Арабьята","Penne Arrabbiata"],2700],[13,["Kayseri Mantısı","Турецкие манты","Түрік мантысы","Turkish Manti"],2900],[14,["Et Tantuni Dürüm","Тантуни в лаваше","Тантуни (лавашта)","Beef Tantuni Wrap"],2500],[14,["Karışık Kumpir","Кумпир","Кумпир","Stuffed Baked Potato"],2600],[14,["Taksim Islak Burger","Мокрый бургер (Ислак)","Ылғалды бургер","Taksim Wet Burger"],1500],[14,["Ekmek Arası Kokoreç","Кокореч","Кокореч","Kokoretsi Sandwich"],3200],[15,["Klasik Burger","Классический бургер","Классикалық бургер","Classic Beef Burger"],2700],[15,["Cheeseburger","Чизбургер","Чизбургер","Cheeseburger"],2900],[15,["Double Burger","Двойной бургер","Қос бургер","Double Beef Burger"],3700],[15,["Çıtır Tavuk Burger","Чикен бургер","Қытырлақ тауық бургері","Crispy Chicken Burger"],2500],[16,["Kremalı Tavuk","Курица в сливочном соусе","Кілегей соусымен","Chicken in Cream Sauce"],3400],[16,["Tatlı-Ekşi Tavuk","Курица в кисло-сладком соусе","Тәтті-қышқыл соуспен","Sweet-Sour Chicken"],3400],[16,["Cafe de Paris Soslu Tavuk","Курица Кафе де Пари","Кафе де Париж соусымен","Cafe de Paris Chicken"],3400],[16,["Acı Soslu Tavuk","Курица в остром соусе","Ащы соуспен","Hot Sauce Chicken"],3400],[16,["Köri Soslu Tavuk","Курица Карри","Карри соусымен","Curry Chicken"],3400],[16,["Kekikli Tavuk","Курица с тимьяном","Тимьян қосылған тауық","Chicken with Thyme"],3400],[16,["Teriyaki Soslu Tavuk","Курица Терияки","Терияки соусымен","Teriyaki Chicken"],3400],[16,["Barbekü Soslu Tavuk","Курица с соусом барбекю","Барбекю соусымен","Chicken with Barbecue Sauce"],3400],[16,["Kremalı Acılı Tavuk","Курица в сливочно-остром соусе","Кілегейлі-ащы соуспен","Creamy and Spicy Chicken"],3400],[17,["Özbek Pilavı","Узбекский плов","Өзбек палауы","Uzbek Pilaf"],2600],[17,["Uygur Lagman","Гуйру лагман","Қуырылған лагман","Uyghur Lagman"],2700],[17,["Kavurma Lagman","Цомян (жареный лагман)","Цомян лагман","Fried Lagman"],2800],[17,["Etli Buhar Mantısı (5 Adet)","Манты с мясом (5 шт)","Ет қосылған мәнті (5 дана)","Steamed Manti (5 pcs)"],2500],[18,["Mini Burger Çocuk Menüsü","Детский сет с бургером","Балалар бургер мәзірі","Kids Mini Burger Meal"],2200],[18,["Nuggets & Patates Tabağı","Наггетсы с картофелем фри","Наггетс пен фри","Nuggets & Fries Plate"],2100],[18,["Püreli Çocuk Köftesi","Детские котлеты с пюре","Балалар котлеті мен пюре","Kids Meatballs with Puree"],2300],[19,["Fıstıklı Baklava","Фисташковая пахлава","Пістелі пахлава","Pistachio Baklava"],2400],[19,["Hatay Künefe","Кюнефе","Күнефе","Kunefe"],2600],[19,["San Sebastian Cheesecake","Чизкейк Сан-Себастьян","Сан-Себастьян чизкейкі","San Sebastian Cheesecake"],2400],[19,["Fırın Sütlaç","Сютлач (рисовый пудинг)","Сүтлач (күріш пудингі)","Baked Rice Pudding"],1600],[19,["Havuç Dilim Baklava","Хавуч дилим пахлава","Қатпарлы пахлава (Хавуч дилим)","Carrot Slice Baklava"],2700],[20,["Susamsız / Susamlı Simit","Турецкий симит","Түрік симиті","Turkish Simit"],600],[20,["Peynirli Poğaça","Поача с сыром","Ірімшік қосылған поача","Cheese Pastry"],650],[20,["Peynirli Su Böreği","Су бёрек","Су бөрегі","Water Borek"],1700],[20,["Sıcak Puf Lavaş Ekmeği","Горячая лепешка / Пуф хлеб","Ыстық лаваш / Пуф нан","Hot Puff Bread"],400],[21,["Kesme Maraş Dondurması","Марашское мороженое","Мараш балмұздағы (кесілген)","Marash Ice Cream"],1600],[21,["Vanilyalı Dondurma (3 Top)","Ванильное мороженое (3 шарика)","Ванильді балмұздақ (3 доп)","Vanilla Ice Cream (3 scoops)"],1400],[21,["Çikolatalı Dondurma (3 Top)","Шоколадное мороженое (3 шарика)","Шоколадты балмұздақ (3 доп)","Chocolate Ice Cream (3 scoops)"],1400],[22,["Bardak Türk Çayı","Турецкий чай в стаканчике","Стақандағы түрік шайы","Turkish Tea (Glass)"],400],[22,["Demlik Türk Çayı","Турецкий чай в чайнике","Шәйнектегі түрік шайы","Pot of Turkish Tea"],2200],[22,["Taşkent Çayı (Demlik)","Ташкентский чай","Ташкент шайы (лимонмен)","Tashkent Tea (Pot)"],2400],[22,["Orman Meyveli Çay","Ягодный чай (чайник)","Жидек шайы (шәйнек)","Berry Tea (Pot)"],2500],[23,["Türk Kahvesi","Турецкий кофе","Түрік кофесі","Turkish Coffee"],1100],[23,["Americano","Американо","Американо","Americano"],1200],[23,["Cappuccino","Капучино","Капучино","Cappuccino"],1400],[23,["Cafe Latte","Латте","Латте","Caffe Latte"],1400],[23,["Espresso","Эспрессо","Эспрессо","Espresso"],1000],[24,["Fanta (0.5 L)","Fanta (0.5 л)","Fanta (0.5 л)","Fanta (0.5 L)"],690],[24,["Sprite (0.5 L)","Sprite (0.5 л)","Sprite (0.5 л)","Sprite (0.5 L)"],690],[24,["Coca-Cola (0.5 L)","Coca-Cola (0.5 л)","Coca-Cola (0.5 л)","Coca-Cola (0.5 L)"],690],[24,["Fuse Tea (0.5 L)","Fusetea (0.5 л)","Fusetea (0.5 л)","Fuse Tea (0.5 L)"],690],[24,["Fanta (1 L)","Fanta (1 л)","Fanta (1 л)","Fanta (1 L)"],1200],[24,["Sprite (1 L)","Sprite (1 л)","Sprite (1 л)","Sprite (1 L)"],1200],[24,["Coca-Cola (1 L)","Coca-Cola (1 л)","Coca-Cola (1 л)","Coca-Cola (1 L)"],1200],[24,["Fuse Tea (1 L)","Fusetea (1 л)","Fusetea (1 л)","Fuse Tea (1 L)"],1200],[24,["Coca-Cola (0.25 Cam Şişe)","Coca-Cola (0.25 стекло)","Coca-Cola (0.25 шыны)","Coca-Cola (0.25 glass bottle)"],700],[24,["Ayran (330 ml)","Айран (330 мл)","Айран (330 мл)","Ayran (330 ml)"],450],[24,["Su (0.5 L)","Вода без газа (0.5 л)","Газсыз су (0.5 л)","Still Water (0.5 L)"],400],[24,["Soda / Maden Suyu","Вода с газом (0.5 л)","Газды су (0.5 л)","Sparkling Water"],500],[24,["Mango Mojito","Мохито Манго","Манго мохито","Mango Mojito"],2100],[24,["Ev Yapımı Limonata","Классический лимонад","Классикалық лимонад","Homemade Lemonade"],1500]]};
+const C=DATA.C,M=DATA.M;
+const L=['tr','ru','kk','en'],LN=['Türkçe','Русский','Қазақша','English'],LC=['TR','RU','KZ','EN'];
+const T={
+ tag:['MENÜ · ALMATY','МЕНЮ · АЛМАТЫ','МӘЗІР · АЛМАТЫ','MENU · ALMATY'],
+ price:['Fiyatlar tenge (₸) cinsindendir.','Цены указаны в тенге (₸).','Бағалар теңгемен (₸) көрсетілген.','Prices are in tenge (₸).'],
+ home:['Menü','Меню','Мәзір','Menu'],search:['Ara','Поиск','Іздеу','Search'],lang:['Dil','Язык','Тіл','Language'],
+ ph:['Ürün ara…','Найти блюдо…','Тағам іздеу…','Search the menu…'],
+ none:['Sonuç bulunamadı.','Ничего не найдено.','Ештеңе табылмады.','No results.'],
+ back:['Geri','Назад','Артқа','Back']
+};
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+let lang=0,seen=false,homeY=0;
+function detect(){const s=store.get('ec-menu-lang');if(s&&L.includes(s))return L.indexOf(s);const n=(navigator.language||'en').slice(0,2).toLowerCase();return n==='tr'?0:n==='ru'?1:n==='kk'?2:3}
+const money=v=>v.toLocaleString('ru-RU').replace(/ /g,' ')+' ₸';
+const norm=s=>s.toLocaleLowerCase(L[lang]==='tr'?'tr':undefined).replace(/[̀-ͯ]/g,'');
+const counts=C.map((c,i)=>M.filter(m=>m[0]===i).length);
+
+function buildGrid(){
+  $('#grid').innerHTML=C.map((c,i)=>`<button class="tile rv" type="button" data-c="${i}" style="transition-delay:${Math.min(i,14)*45}ms"><span class="ph g${i%6}"><i>${c.e}</i></span><img src="foto/${c.k}.jpg" alt="" loading="lazy" onerror="this.remove()"><small>${counts[i]}</small><b></b></button>`).join('');
+  const io='IntersectionObserver' in window?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{rootMargin:'0px 0px 60px 0px'}):null;
+  $$('.tile').forEach(t=>io?io.observe(t):t.classList.add('in'));
+  setTimeout(()=>$$('.tile').forEach(t=>{t.classList.add('in');setTimeout(()=>{t.classList.remove('rv');t.style.transitionDelay=''},900)}),1400);
+}
+function applyLang(){
+  const l=L[lang];document.documentElement.lang=l;store.set('ec-menu-lang',l);
+  $$('[data-i]').forEach(e=>{const v=T[e.dataset.i];if(v)e.textContent=v[lang]});
+  $$('.tile').forEach(t=>t.querySelector('b').textContent=C[t.dataset.c].n[lang]);
+  $('#langCode').textContent=LC[lang];$('#q').placeholder=T.ph[lang];
+  $$('.back').forEach(b=>b.setAttribute('aria-label',T.back[lang]));
+  document.title='Easy Cafe · '+T.home[lang];
+  $('#opts').innerHTML=L.map((x,i)=>`<button class="opt" type="button" role="radio" aria-checked="${i===lang}" data-l="${i}"><code>${LC[i]}</code>${LN[i]}</button>`).join('');
+  route();
+}
+function rows(list,showCat){
+  return list.map(m=>`<div class="row"><div class="nm">${esc(m[1][lang])}${showCat?`<small>${esc(C[m[0]].n[lang])}</small>`:''}</div><div class="pr">${money(m[2])}</div></div>`).join('');
+}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function show(id){$$('.view').forEach(v=>v.classList.toggle('on',v.id===id));
+  const s=id==='v-search';$('#nSearch').toggleAttribute('aria-current',s);$('#nHome').toggleAttribute('aria-current',!s);
+  if(s)$('#nSearch').setAttribute('aria-current','page');else $('#nHome').setAttribute('aria-current','page')}
+function route(){
+  const h=location.hash.slice(1);
+  if(h.startsWith('c-')){const i=C.findIndex(c=>c.k===h.slice(2));if(i>-1){
+    const c=C[i];show('v-cat');$('#catTitle').textContent=c.n[lang];$('#catCnt').textContent=counts[i];
+    $('#catBand').className='band g'+(i%6);$('#catBand').innerHTML=`<img src="foto/${c.k}.jpg" alt="" onerror="this.remove()"><span class="em" aria-hidden="true">${c.e}</span>`;
+    $('#catList').innerHTML=rows(M.filter(m=>m[0]===i),false);scrollTo(0,0);return}}
+  if(h==='search'){show('v-search');runSearch();return}
+  show('v-home');if(seen)scrollTo(0,homeY);
+}
+function runSearch(){
+  const q=norm($('#q').value.trim());const out=$('#resList');
+  if(!q){out.innerHTML=rows(M,true);return}
+  const r=M.filter(m=>m[1].some(n=>norm(n).includes(q)));
+  out.innerHTML=r.length?rows(r,true):`<div class="empty">${T.none[lang]}</div>`;
+}
+$('#grid').addEventListener('click',e=>{const t=e.target.closest('.tile');if(t){homeY=scrollY;seen=true;location.hash='c-'+C[t.dataset.c].k}});
+$('#back1').addEventListener('click',()=>{location.hash=''});
+$('#back2').addEventListener('click',()=>{location.hash=''});
+$('#nHome').addEventListener('click',()=>{if(location.hash){location.hash=''}else scrollTo({top:0,behavior:'smooth'})});
+$('#nSearch').addEventListener('click',()=>{if(location.hash==='#search'){$('#q').focus();return}homeY=location.hash?homeY:scrollY;seen=true;location.hash='search';setTimeout(()=>$('#q').focus(),60)});
+$('#q').addEventListener('input',runSearch);
+function openSheet(){$('#sheet').hidden=false;const o=$('#opts [aria-checked=true]');o&&o.focus()}
+function closeSheet(){$('#sheet').hidden=true}
+$('#langBtn').addEventListener('click',openSheet);$('#nLang').addEventListener('click',openSheet);
+$('#sheet').addEventListener('click',e=>{if(e.target.id==='sheet'){closeSheet();return}const o=e.target.closest('.opt');if(o){lang=Number(o.dataset.l);closeSheet();applyLang()}});
+addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet()});
+addEventListener('hashchange',route);
+buildGrid();lang=detect();applyLang();seen=true;
+</script>

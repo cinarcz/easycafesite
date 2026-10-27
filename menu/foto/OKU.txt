@@ -1,0 +1,32 @@
+Fotoğraf klasörü / Папка с фото / Photo folder
+
+Buraya JPG fotoğrafları koy. Dosya adı aşağıdaki gibi olmalı. Fotoğraf yoksa karoda ikon görünür.
+Kare (1:1), 600x600 piksel, JPG, 60-120 KB idealdir.
+
+kapak.jpg  -> üstteki kapak görseli (örn. 1000x600, kafenin içi veya genel yemek fotoğrafı)
+
+kahvalti.jpg  -> Kahvaltı
+yumurta.jpg  -> Yumurta & Omlet
+botka.jpg  -> Botkalar
+corba.jpg  -> Çorbalar
+aperatif.jpg  -> Aperatifler
+salata.jpg  -> Salatalar
+doner.jpg  -> Dönerler
+pide.jpg  -> Gözleme & Pide
+kofta.jpg  -> Köfteler
+mangal.jpg  -> Mangal & Kebap
+steak.jpg  -> Steaks
+sicakyemek.jpg  -> Sıcak Yemekler
+pizza.jpg  -> Pizzalar
+pasta.jpg  -> Makarnalar
+streetfood.jpg  -> Sokak Lezzetleri
+burger.jpg  -> Burgerler
+tavuk.jpg  -> Tavuk Yemekleri
+dogu.jpg  -> Doğu Mutfağı
+cocuk.jpg  -> Çocuk Menüsü
+tatli.jpg  -> Tatlılar
+firin.jpg  -> Fırın Ürünleri
+balbuzak.jpg  -> Dondurma
+cay.jpg  -> Çaylar
+kahve.jpg  -> Kahveler
+soguk.jpg  -> Soğuk İçecekler
