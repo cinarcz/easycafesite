@@ -1,0 +1,42 @@
+WEBVTT
+
+1
+00:00:01.200 --> 00:00:06.000
+Orders, kitchen, cashier and management for your cafe on one screen
+
+2
+00:00:06.600 --> 00:00:12.900
+Pick a role and enter your password. Each employee sees their own screen
+
+3
+00:00:13.600 --> 00:00:25.800
+The waiter picks a table, adds items, writes a note and sends the order
+
+4
+00:00:26.600 --> 00:00:39.800
+The guest scans the QR code on the table and orders in their own language. The waiter approves
+
+5
+00:00:40.500 --> 00:00:48.800
+The kitchen screen in its own language: a timer and one tap to mark ready
+
+6
+00:00:49.500 --> 00:00:57.800
+Tickets go to the right printer: kitchen, doner, bar and cashier
+
+7
+00:00:58.500 --> 00:01:08.800
+Apply a discount at the till and pay by cash, card or Glovo. A fiscal receipt is printed
+
+8
+00:01:09.500 --> 00:01:17.800
+The owner sees revenue live, switches features on and off and changes the language with one tap
+
+9
+00:01:18.500 --> 00:01:25.800
+Every record exports as CSV for Excel. At the end of the day the Z report is archived
+
+10
+00:01:26.700 --> 00:01:31.500
+Easycafe · Türkçe · Русский · Қазақша · English
+

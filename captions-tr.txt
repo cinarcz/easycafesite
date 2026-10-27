@@ -1,0 +1,42 @@
+WEBVTT
+
+1
+00:00:01.200 --> 00:00:06.000
+Kafeniz için tek ekranda sipariş, mutfak, kasa ve yönetim
+
+2
+00:00:06.600 --> 00:00:12.900
+Rolünü seç, şifreni gir. Her çalışan kendi ekranını görür
+
+3
+00:00:13.600 --> 00:00:25.800
+Garson masayı seçer, ürünleri ekler, not yazar ve gönderir
+
+4
+00:00:26.600 --> 00:00:39.800
+Müşteri masadaki QR'ı okutur, kendi dilinde sipariş verir. Garson onaylar
+
+5
+00:00:40.500 --> 00:00:48.800
+Mutfak ekranı kendi dilinde: süre sayacı ve tek dokunuşla hazır
+
+6
+00:00:49.500 --> 00:00:57.800
+Fişler doğru yazıcıya gider: mutfak, döner, bar ve kasa
+
+7
+00:00:58.500 --> 00:01:08.800
+Kasada indirim ver, nakit, kart veya Glovo ile öde. Fiskal fiş basılır
+
+8
+00:01:09.500 --> 00:01:17.800
+Patron ciroyu anlık görür, özellikleri açıp kapatır, dili tek dokunuşla değiştirir
+
+9
+00:01:18.500 --> 00:01:25.800
+Her kayıt Excel için CSV olarak iner. Gün sonunda Z raporu arşivlenir
+
+10
+00:01:26.700 --> 00:01:31.500
+Easycafe · Türkçe · Русский · Қазақша · English
+

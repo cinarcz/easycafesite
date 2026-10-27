@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Easycafe</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Concept: a till roll. Thermal paper, perforation lines, mono receipt type. The one bold move is the receipt that prints in the hero. */
+:root{
+  --bg:#F3F5F8;        /* thermal white, cool */
+  --surface:#FFFFFF;
+  --ink:#13171D;
+  --mute:#566070;
+  --line:#CBD2DC;
+  --accent:#FF9A1F;    /* amber, fills */
+  --accent-ink:#B35C00;/* amber, text on bg */
+  --on-accent:#1A1000;
+  --ok:#0C8A60;
+  --paper:#FBFAF6;     /* receipt stock, same in both themes */
+  --paper-ink:#1B1B1B;
+  --shadow:0 24px 60px -24px rgba(19,23,29,.35);
+  --display:'Unbounded','Manrope',system-ui,sans-serif;
+  --body:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,'DejaVu Sans Mono',monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0C0F14;--surface:#141922;--ink:#EDF0F5;--mute:#98A3B4;--line:#2A3340;--accent:#FFB224;--accent-ink:#FFB224;--on-accent:#1A1000;--ok:#2DD4A0;--shadow:0 24px 60px -24px rgba(0,0,0,.7);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0C0F14;--surface:#141922;--ink:#EDF0F5;--mute:#98A3B4;--line:#2A3340;--accent:#FFB224;--accent-ink:#FFB224;--on-accent:#1A1000;--ok:#2DD4A0;--shadow:0 24px 60px -24px rgba(0,0,0,.7);color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--bg)}
+img,video{max-width:100%;display:block}
+a{color:inherit}
+.wrap{max-width:1200px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);font-weight:600;letter-spacing:-.015em;line-height:1.15;margin:0;text-wrap:balance}
+h2{font-size:clamp(1.55rem,2.9vw,2.4rem)}
+h3{font-size:1.02rem;font-weight:500;letter-spacing:0}
+p{margin:0;text-wrap:pretty}
+.mono{font-family:var(--mono)}
+.eyebrow{display:inline-flex;align-items:flex-start;gap:10px;font:500 12px/1.5 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ink)}
+.eyebrow::before{content:"";flex:none;margin-top:3px;width:9px;height:9px;background:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 28%,transparent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:4px}
+
+/* header */
+.hdr{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px dashed var(--line)}
+.hdr .wrap{display:flex;align-items:center;gap:20px;height:68px}
+.logo{font:600 21px/1 var(--display);letter-spacing:-.03em;text-decoration:none;display:flex;align-items:center;gap:10px;flex:none}
+.logo i{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--accent),#FF6A1F);display:grid;place-items:center}
+.logo i svg{width:15px;height:15px;stroke:var(--on-accent);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.nav{display:none;gap:26px;margin-left:18px;font-size:14.5px;font-weight:600}
+.nav a{text-decoration:none;color:var(--mute)}.nav a:hover{color:var(--ink)}
+.sp{flex:1}
+.langs{display:flex;gap:2px;padding:3px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.langs button{font:600 12.5px/1 var(--mono);padding:9px 11px;border:0;border-radius:7px;background:transparent;color:var(--mute);cursor:pointer}
+.langs button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.themebtn{width:40px;height:40px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);display:grid;place-items:center;cursor:pointer;flex:none}
+.themebtn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2}
+@media(min-width:1000px){.nav{display:flex}}
+@media(max-width:700px){.paperwrap{height:330px}}
+@media(max-width:480px){.hdr .wrap{gap:8px}.logo{font-size:17px}.logo i{display:none}.langs button{padding:8px 7px;font-size:12px}.themebtn{width:36px;height:36px}}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:10px;font:700 15.5px/1 var(--body);padding:16px 24px;border-radius:10px;text-decoration:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;transition:transform .2s,box-shadow .2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 12px 26px -14px rgba(0,0,0,.45)}
+.btn.pri{background:var(--accent);border-color:transparent;color:var(--on-accent)}
+.btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+
+/* hero */
+.hero{padding-block:clamp(36px,6vw,84px) clamp(28px,4vw,56px);position:relative}
+.hero::before{content:"";position:absolute;inset:0;background-image:radial-gradient(color-mix(in srgb,var(--ink) 16%,transparent) 1.2px,transparent 1.3px);background-size:22px 22px;mask-image:linear-gradient(180deg,#000 0,transparent 78%);-webkit-mask-image:linear-gradient(180deg,#000 0,transparent 78%);pointer-events:none}
+.hero .wrap{position:relative;display:grid;gap:44px;align-items:center}
+@media(min-width:960px){.hero .wrap{grid-template-columns:1.12fr .88fr;gap:64px}}
+.hero h1{font-size:clamp(1.85rem,4vw,3.25rem);margin:22px 0 22px}
+.hero .sub{font-size:clamp(1.02rem,1.5vw,1.18rem);color:var(--mute);max-width:56ch}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.facts{display:grid;gap:0;margin-top:46px;border:1px dashed var(--line);border-radius:6px;background:color-mix(in srgb,var(--surface) 70%,transparent)}
+@media(min-width:620px){.facts{grid-template-columns:repeat(4,1fr)}}
+.fact{padding:16px 18px;border-bottom:1px dashed var(--line)}
+@media(min-width:620px){.fact{border-bottom:0;border-right:1px dashed var(--line)}.fact:last-child{border-right:0}}
+.fact:last-child{border-bottom:0}
+.fact b{display:block;font:600 1.7rem/1 var(--display);color:var(--ink)}
+.fact span{display:block;margin-top:8px;font:400 12.5px/1.45 var(--mono);color:var(--mute)}
+
+/* printer */
+.printer{position:relative;width:min(100%,380px);margin:0 auto;padding-top:10px}
+.paperwrap{height:400px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:0 22px;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 14%);mask-image:linear-gradient(180deg,transparent 0,#000 14%)}
+.paper{background:var(--paper);color:var(--paper-ink);font:500 13.5px/1.7 var(--mono);padding:18px 20px 16px;box-shadow:var(--shadow);transition:transform .8s cubic-bezier(.5,0,.2,1),opacity .8s}
+.paper.cut{transform:translateY(-70px);opacity:0}
+.pl{display:flex;justify-content:space-between;gap:14px;animation:feed .34s ease-out both;min-height:23px}
+.pl.c{justify-content:center;text-align:center}.pl.b{font-weight:600}.pl.big{font-size:17px;font-weight:600}
+.pl.hr{border-top:2px dashed #9a9a92;margin:7px 0 6px;min-height:0;height:0}
+.pl.tot{font-size:16px;font-weight:600}
+.pl span:last-child{white-space:nowrap}
+@keyframes feed{from{transform:translateY(18px);opacity:0}to{transform:none;opacity:1}}
+.slot{position:relative;z-index:2;height:78px;border-radius:12px;background:linear-gradient(#262E3B,#171C25);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:space-between;padding:0 24px;color:#C9D1DD;font:500 12px/1 var(--mono);letter-spacing:.08em}
+.slot::before{content:"";position:absolute;left:18px;right:18px;top:-3px;height:7px;border-radius:4px;background:#05070A}
+.led{width:9px;height:9px;border-radius:50%;background:#2DD4A0;box-shadow:0 0 12px #2DD4A0;animation:led 1.4s infinite}
+@keyframes led{50%{opacity:.35}}
+
+/* sections */
+section{padding-block:clamp(52px,8vw,104px)}
+.tear{position:relative;border-top:1px dashed var(--line);height:0}
+.tear svg{position:absolute;left:max(20px,calc((100% - 1200px)/2 + 20px));top:-11px;width:22px;height:22px;fill:none;stroke:var(--mute);stroke-width:1.8;stroke-linecap:round;background:var(--bg);padding:0 3px;box-sizing:content-box}
+.sechead{display:grid;gap:16px;max-width:780px;margin-bottom:clamp(30px,4vw,52px)}
+.sechead p{color:var(--mute);font-size:1.06rem}
+
+/* video */
+.vid{position:relative;border:1px solid var(--line);border-radius:6px;background:#000;box-shadow:var(--shadow);overflow:hidden}
+.vid video{width:100%;aspect-ratio:16/9;background:#000}
+.vid::cue{font:600 22px var(--body)}
+.capbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:16px;font-size:14px;color:var(--mute)}
+.capbar .chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:600 12.5px/1 var(--mono);padding:9px 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--mute);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.note{font:400 13px/1.5 var(--mono);color:var(--mute)}
+
+/* features */
+.fgrid{display:grid;border-top:1px dashed var(--line);border-left:1px dashed var(--line)}
+@media(min-width:700px){.fgrid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1040px){.fgrid{grid-template-columns:repeat(3,1fr)}}
+.fc{padding:30px 28px 34px;border-right:1px dashed var(--line);border-bottom:1px dashed var(--line);display:grid;gap:12px;align-content:start;transition:background .25s}
+.fc:hover{background:var(--surface)}
+.fc .ic{width:34px;height:34px;fill:none;stroke:var(--accent-ink);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;transition:transform .35s}
+.fc:hover .ic{transform:translateY(-4px) rotate(-4deg)}
+.fc p{color:var(--mute);font-size:.98rem}
+
+/* flow */
+.flow{position:relative;display:grid;gap:26px;counter-reset:s}
+@media(min-width:960px){.flow{grid-template-columns:repeat(5,1fr);gap:22px}}
+.flow::before{content:"";position:absolute;left:19px;top:8px;bottom:8px;border-left:2px dashed var(--line)}
+.flow::after{content:"";position:absolute;left:19px;top:8px;width:2px;background:var(--accent);height:calc((100% - 16px)*var(--p,0));transition:height .12s linear}
+@media(min-width:960px){.flow::before{left:0;right:0;top:19px;bottom:auto;border-left:0;border-top:2px dashed var(--line)}.flow::after{left:0;top:19px;height:2px;width:calc(100%*var(--p,0))}}
+.step{position:relative;padding-left:60px;display:grid;gap:8px;align-content:start}
+@media(min-width:960px){.step{padding-left:0;padding-top:58px}}
+.step .n{position:absolute;left:0;top:0;width:40px;height:40px;border-radius:50%;border:2px solid var(--line);background:var(--bg);display:grid;place-items:center;font:600 14px var(--mono);color:var(--mute);transition:all .3s;z-index:1}
+.step.on .n{border-color:var(--accent);background:var(--accent);color:var(--on-accent)}
+.step p{color:var(--mute);font-size:.96rem}
+
+/* screens */
+.screens{display:grid;gap:30px;align-items:start}
+@media(min-width:960px){.screens{grid-template-columns:.8fr 1.2fr;gap:56px}}
+.tabs{display:grid;gap:0;border-top:1px dashed var(--line)}
+.tab{all:unset;box-sizing:border-box;display:grid;gap:8px;padding:20px 4px 20px 20px;border-bottom:1px dashed var(--line);cursor:pointer;position:relative}
+.tab h3{font-size:1.05rem;color:var(--mute);transition:color .2s}
+.tab p{color:var(--mute);font-size:.97rem;max-height:0;overflow:hidden;opacity:0;transition:max-height .45s,opacity .35s}
+.tab::before{content:"";position:absolute;left:0;top:26px;width:7px;height:7px;background:var(--line);transition:background .2s,transform .2s}
+.tab[aria-selected="true"] h3{color:var(--ink)}.tab[aria-selected="true"] p{max-height:160px;opacity:1}.tab[aria-selected="true"]::before{background:var(--accent);transform:scale(1.5)}
+.tab:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}
+.shots{position:relative;aspect-ratio:16/9;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#0C0F14;box-shadow:var(--shadow)}
+.shots img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.025);transition:opacity .6s,transform .9s}
+.shots img.on{opacity:1;transform:none}
+.timer{position:absolute;left:0;bottom:0;height:3px;background:var(--accent);width:0}
+
+/* languages */
+.band{background:var(--surface);border-block:1px dashed var(--line)}
+.lgrid{display:grid;gap:30px;align-items:center}
+@media(min-width:960px){.lgrid{grid-template-columns:1fr 1fr;gap:70px}}
+.hello{font:600 clamp(2.4rem,6vw,4.6rem)/1.05 var(--display);margin:0 0 20px;height:1.2em;overflow:hidden;color:var(--accent-ink)}
+.hello span{display:block;animation:hello .6s cubic-bezier(.2,.8,.2,1) both}
+@keyframes hello{from{transform:translateY(70%);opacity:0}to{transform:none;opacity:1}}
+.mini{display:grid;gap:14px;grid-template-columns:repeat(2,1fr)}
+.mc{border:1px solid var(--line);border-radius:6px;background:var(--bg);padding:18px;display:grid;gap:10px;transition:transform .35s,border-color .35s,box-shadow .35s}
+.mc.on{border-color:var(--accent);transform:translateY(-6px);box-shadow:var(--shadow)}
+.mc .tag{font:600 11.5px/1 var(--mono);letter-spacing:.12em;color:var(--accent-ink)}
+.mc b{font-size:15px}.mc ul{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:14.5px;color:var(--mute)}
+.mc .go{margin-top:4px;padding:10px;border-radius:7px;background:var(--accent);color:var(--on-accent);font:700 13.5px/1 var(--body);text-align:center}
+
+/* hardware */
+.hw{display:grid;gap:34px;align-items:start}
+@media(min-width:960px){.hw{grid-template-columns:1fr 1fr;gap:70px}}
+.ticks{list-style:none;margin:22px 0 0;padding:0;display:grid;gap:12px}
+.ticks li{display:flex;gap:12px;align-items:flex-start}
+.ticks li::before{content:"";flex:none;width:18px;height:18px;margin-top:4px;background:var(--ok);clip-path:polygon(14% 52%,0 66%,38% 100%,100% 22%,86% 8%,38% 70%)}
+.stations{background:var(--paper);color:var(--paper-ink);font:500 14px/1.5 var(--mono);padding:26px 26px 22px;box-shadow:var(--shadow);position:relative}
+.stations::after{content:"";position:absolute;left:0;right:0;bottom:-8px;height:9px;background:linear-gradient(135deg,var(--paper) 50%,transparent 50%) 0 0/16px 9px,linear-gradient(225deg,var(--paper) 50%,transparent 50%) 0 0/16px 9px}
+.stations .h{display:flex;justify-content:space-between;font-weight:600;border-bottom:2px dashed #9a9a92;padding-bottom:10px;margin-bottom:6px;color:#555}
+.srow{display:grid;grid-template-columns:96px 1fr;gap:14px;padding:12px 8px;border-bottom:1px dashed #cfcec6;transition:background .3s}
+.srow b{font-weight:600;letter-spacing:.04em}.srow.on{background:#FFE9C2}
+
+/* faq */
+.faq{display:grid;border-top:1px dashed var(--line);max-width:860px}
+details{border-bottom:1px dashed var(--line)}
+summary{list-style:none;cursor:pointer;padding:22px 44px 22px 0;font:600 1.05rem/1.4 var(--body);position:relative}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";position:absolute;right:6px;top:50%;margin-top:-14px;font:500 24px/28px var(--mono);color:var(--accent-ink);transition:transform .3s}
+details[open] summary::after{transform:rotate(45deg)}
+details p{padding:0 44px 24px 0;color:var(--mute)}
+
+/* cta */
+.ctab{background:var(--ink);color:var(--bg);padding-block:clamp(52px,7vw,92px)}
+.ctab h2{max-width:20ch}.ctab p{color:color-mix(in srgb,var(--bg) 70%,transparent);margin-top:16px;max-width:54ch}
+.ctab .cta .btn{border-color:color-mix(in srgb,var(--bg) 30%,transparent);background:transparent;color:var(--bg)}
+.ctab .cta .btn.pri{background:var(--accent);color:var(--on-accent);border-color:transparent}
+.contacts{display:flex;flex-wrap:wrap;gap:10px 24px;margin-top:26px;font:500 14px/1.4 var(--mono)}
+.contacts a{text-decoration:none;border-bottom:1px dashed currentColor}
+footer{padding-block:34px;font:400 13px/1.6 var(--mono);color:var(--mute)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:12px 28px;justify-content:space-between}
+
+/* opening: a receipt prints a welcome in four languages, then tears away */
+.intro{display:none;position:fixed;inset:0;z-index:100;background:#0C0F14;color:#EDF0F5;flex-direction:column;align-items:center;justify-content:center;gap:26px;transition:transform 1.05s cubic-bezier(.7,0,.2,1);padding:20px}
+.introing .intro{display:flex}
+.introing,.introing body{overflow:hidden}
+.intro.out{transform:translateY(-110%)}
+.intro::after{content:"";position:absolute;left:0;right:0;top:100%;height:16px;background:#0C0F14;-webkit-mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 90deg,#0000 91deg) 50%/24px 100%;mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 90deg,#0000 91deg) 50%/24px 100%}
+.ilogo{font:600 clamp(1.5rem,3vw,2rem)/1 var(--display);letter-spacing:-.03em;color:var(--accent);opacity:.95}
+.ipaper{width:min(88vw,350px);background:var(--paper);color:var(--paper-ink);font:500 14px/1.7 var(--mono);padding:20px 22px 18px;box-shadow:0 30px 80px -20px rgba(0,0,0,.8);transition:transform .7s cubic-bezier(.5,0,.2,1),opacity .6s}
+.ipaper.cut{transform:translateY(-60px) rotate(-2deg);opacity:0}
+.ipaper .tg{font-size:11px;letter-spacing:.12em;color:#8b8b82;align-self:center}
+.ipaper .pl.g{font-size:16px;font-weight:600}
+.iskip{font:600 12px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#98A3B4;background:none;border:1px solid #2A3340;border-radius:999px;padding:12px 20px;cursor:pointer}
+.iskip:hover{color:#EDF0F5;border-color:#98A3B4}
+.heropre .hero [data-e]{opacity:0}
+.hero-in .hero [data-e]{animation:heroup .9s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--d,0)*110ms)}
+@keyframes heroup{from{opacity:0;transform:translateY(34px)}to{opacity:1;transform:none}}
+
+/* reveal: readable at rest, eases in when scrolled to */
+.rv.pre{opacity:.4;transform:translateY(18px)}
+.rv{transition:opacity .7s,transform .7s cubic-bezier(.2,.8,.2,1)}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.rv.pre{opacity:1;transform:none}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-order" viewBox="0 0 24 24"><path d="M3 9l1.2-4.5h15.6L21 9M3 9h18M5 9v11M19 9v11M9 14h6M12 11v6"/></symbol>
+<symbol id="i-qr" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM20 14v3M14 20h3M20 20h1"/></symbol>
+<symbol id="i-kitchen" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 8.5V13l3 2M9.5 3h5"/></symbol>
+<symbol id="i-print" viewBox="0 0 24 24"><path d="M7 9V3h10v6M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><rect x="7" y="14" width="10" height="7"/></symbol>
+<symbol id="i-till" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10.5h18M7 15h4"/></symbol>
+<symbol id="i-fiscal" viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2zM9 9.5l2 2 4-4"/></symbol>
+<symbol id="i-stock" viewBox="0 0 24 24"><path d="M3 8l9-5 9 5v8l-9 5-9-5zM3 8l9 5 9-5M12 13v8"/></symbol>
+<symbol id="i-report" viewBox="0 0 24 24"><path d="M4 20V11M10 20V4M16 20v-7M22 20H2"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></symbol>
+<symbol id="i-cut" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4L8.1 15.9M14.5 14.5L20 20M8.1 8.1L12 12"/></symbol>
+</svg>
+
+<script>try{if(!sessionStorage.getItem('ec-intro')&&!matchMedia('(prefers-reduced-motion:reduce)').matches)document.documentElement.classList.add('introing','heropre')}catch(e){}</script>
+<div class="intro" id="intro"><div class="ilogo">Easycafe</div><div class="ipaper" id="ipaper" aria-hidden="true"></div><button class="iskip" id="iskip" type="button"></button></div>
+<header class="hdr"><div class="wrap">
+  <a class="logo" href="#top"><i><svg viewBox="0 0 24 24"><path d="M5 9h11v5a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4zM16 10h1.5a2.5 2.5 0 0 1 0 5H16M8 3v3M12 3v3"/></svg></i>Easycafe</a>
+  <nav class="nav"><a href="#features" data-i="n_feat"></a><a href="#flow" data-i="n_flow"></a><a href="#screens" data-i="n_roles"></a><a href="#languages" data-i="n_lang"></a><a href="#hardware" data-i="n_hw"></a><a href="#faq" data-i="n_faq"></a></nav>
+  <div class="sp"></div>
+  <div class="langs" id="langs" role="group" aria-label="Language"><button data-l="tr">TR</button><button data-l="ru">RU</button><button data-l="kk">KZ</button><button data-l="en">EN</button></div>
+  <button class="themebtn" id="themeBtn" aria-label="Theme"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4v16" /><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg></button>
+</div></header>
+
+<main id="top">
+<div class="hero"><div class="wrap">
+  <div>
+    <span class="eyebrow" data-i="h_eye" data-e style="--d:0"></span>
+    <h1 data-i="h_h1" data-e style="--d:1"></h1>
+    <p class="sub" data-i="h_sub" data-e style="--d:2"></p>
+    <div class="cta" data-e style="--d:3">
+      <a class="btn pri" href="#demo"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z"/></svg><span data-i="h_cta1"></span></a>
+      <a class="btn" href="#features" data-i="h_cta2"></a>
+      <a class="btn" id="liveBtn" href="#" hidden target="_blank" rel="noopener"><span data-i="h_live"></span></a>
+    </div>
+    <div class="facts" data-e style="--d:4">
+      <div class="fact"><b>4</b><span data-i="f_l1"></span></div>
+      <div class="fact"><b>5</b><span data-i="f_l2"></span></div>
+      <div class="fact"><b>4</b><span data-i="f_l3"></span></div>
+      <div class="fact"><b>QR</b><span data-i="f_l4"></span></div>
+    </div>
+  </div>
+  <div class="printer" aria-hidden="true" data-e style="--d:3">
+    <div class="paperwrap"><div class="paper" id="paper"></div></div>
+    <div class="slot"><span>ESC/POS · 80 mm</span><span class="led"></span></div>
+  </div>
+</div></div>
+
+<div class="tear"><svg viewBox="0 0 24 24"><use href="#i-cut"/></svg></div>
+
+<section id="demo"><div class="wrap">
+  <div class="sechead rv"><span class="eyebrow">Demo</span><h2 data-i="v_t"></h2><p data-i="v_d"></p></div>
+  <div class="vid rv">
+    <video id="vid" controls playsinline preload="metadata" poster="poster.jpg">
+      <source src="demo.mp4" type="video/mp4">
+      <track kind="captions" data-src="captions-tr.txt" srclang="tr" label="Türkçe">
+      <track kind="captions" data-src="captions-ru.txt" srclang="ru" label="Русский">
+      <track kind="captions" data-src="captions-kk.txt" srclang="kk" label="Қазақша">
+      <track kind="captions" data-src="captions-en.txt" srclang="en" label="English">
+    </video>
+  </div>
+  <div class="capbar"><span data-i="v_cc"></span><div class="chips" id="capChips"></div><span class="note" data-i="v_n" style="margin-left:auto"></span></div>
+</div></section>
+
+<div class="tear"><svg viewBox="0 0 24 24"><use href="#i-cut"/></svg></div>
+
+<section id="features"><div class="wrap">
+  <div class="sechead rv"><span class="eyebrow" data-i="n_feat"></span><h2 data-i="fe_t"></h2></div>
+  <div class="fgrid" id="fgrid"></div>
+</div></section>
+
+<div class="tear"><svg viewBox="0 0 24 24"><use href="#i-cut"/></svg></div>
+
+<section id="flow"><div class="wrap">
+  <div class="sechead rv"><span class="eyebrow" data-i="n_flow"></span><h2 data-i="fl_t"></h2></div>
+  <div class="flow" id="flowEl"></div>
+</div></section>
+
+<div class="tear"><svg viewBox="0 0 24 24"><use href="#i-cut"/></svg></div>
+
+<section id="screens"><div class="wrap">
+  <div class="sechead rv"><span class="eyebrow" data-i="n_roles"></span><h2 data-i="r_t"></h2></div>
+  <div class="screens">
+    <div class="tabs" id="tabs" role="tablist"></div>
+    <div class="rv"><div class="shots" id="shots"><img src="screen-1.jpg" alt="" class="on"><img src="screen-2.jpg" alt=""><img src="screen-3.jpg" alt=""><img src="screen-4.jpg" alt=""><img src="screen-5.jpg" alt=""><div class="timer" id="timer"></div></div><p class="note" style="margin-top:14px" data-i="r_n"></p></div>
+  </div>
+</div></section>
+
+<div class="band" id="languages"><section><div class="wrap lgrid">
+  <div class="rv"><span class="eyebrow" data-i="n_lang"></span><div class="hello" id="hello" aria-hidden="true" style="margin-top:22px"></div><h2 data-i="l_t" style="margin-bottom:18px"></h2><p data-i="l_d" style="color:var(--mute);max-width:56ch"></p></div>
+  <div class="mini rv" id="mini"></div>
+</div></section></div>
+
+<section id="hardware"><div class="wrap hw">
+  <div class="rv"><span class="eyebrow" data-i="n_hw"></span><h2 data-i="hw_t" style="margin:18px 0"></h2><p data-i="hw_d" style="color:var(--mute)"></p>
+    <ul class="ticks"><li data-i="hw1"></li><li data-i="hw2"></li><li data-i="hw3"></li><li data-i="hw4"></li></ul></div>
+  <div class="stations rv" id="stations"></div>
+</div></section>
+
+<div class="tear"><svg viewBox="0 0 24 24"><use href="#i-cut"/></svg></div>
+
+<section id="faq"><div class="wrap">
+  <div class="sechead rv"><span class="eyebrow" data-i="n_faq"></span><h2 data-i="faq_t"></h2></div>
+  <div class="faq" id="faqEl"></div>
+</div></section>
+
+<div class="ctab"><div class="wrap">
+  <h2 data-i="c_t"></h2><p data-i="c_d"></p>
+  <div class="cta"><a class="btn pri" href="#demo"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z"/></svg><span data-i="h_cta1"></span></a></div>
+  <div class="contacts" id="contacts"></div>
+</div></div>
+</main>
+<footer><div class="wrap"><span><b style="font-family:var(--display);color:var(--ink)">Easycafe</b> · <span data-i="ft"></span></span><span>© 2026</span></div></footer>
+
+<script>
+/* ===== Edit these before publishing. Empty values stay hidden. ===== */
+const CONFIG={appUrl:'',whatsapp:'',telegram:'',email:'',phone:''};
+
+const L=['tr','ru','kk','en'];
+const D={
+n_feat:['Özellikler','Возможности','Мүмкіндіктер','Features'],n_flow:['Nasıl çalışır','Как это работает','Қалай жұмыс істейді','How it works'],n_roles:['Ekranlar','Экраны','Экрандар','Screens'],n_lang:['Diller','Языки','Тілдер','Languages'],n_hw:['Yazıcılar','Принтеры','Принтерлер','Printers'],n_faq:['SSS','Вопросы','Сұрақтар','FAQ'],
+h_eye:['Kafe ve restoranlar için sipariş ve kasa sistemi','Система заказов и кассы для кафе и ресторанов','Кафе мен мейрамханаларға арналған тапсырыс және касса жүйесі','Ordering and till system for cafes and restaurants'],
+h_h1:['Masadan mutfağa, kasadan rapora tek sistem.','От стола до кухни, от кассы до отчёта — одна система.','Үстелден асханаға, кассадан есепке дейін — бір жүйе.','From table to kitchen, till to report. One system.'],
+h_sub:['Easycafe; sipariş alma, mutfak ekranı, termal yazıcı fişleri, kasa ve günlük raporu bir araya getirir. Çalışanlarınız ve misafirleriniz kendi dilinde kullanır.','Easycafe объединяет приём заказов, экран кухни, печать чеков на термопринтеры, кассу и отчёты за день. Персонал и гости работают на своём языке.','Easycafe тапсырыс қабылдауды, асхана экранын, термопринтер чектерін, кассаны және күндік есепті біріктіреді. Қызметкерлер мен қонақтар өз тілінде қолданады.','Easycafe brings order taking, a kitchen screen, thermal printer tickets, a till and daily reports together. Staff and guests use it in their own language.'],
+h_cta1:['Demoyu izle','Смотреть демо','Демоны көру','Watch the demo'],h_cta2:['Özellikleri gör','Смотреть возможности','Мүмкіндіктерді көру','See features'],h_live:['Canlı sistemi aç','Открыть систему','Жүйені ашу','Open the live system'],
+f_l1:['dil: TR · RU · KZ · EN','языка: TR · RU · KZ · EN','тіл: TR · RU · KZ · EN','languages: TR · RU · KZ · EN'],
+f_l2:['rol: garson, mutfak, kasa, usta, patron','ролей: официант, кухня, касса, шеф, владелец','рөл: даяшы, асхана, касса, шеф, иесі','roles: waiter, kitchen, cashier, chef, owner'],
+f_l3:['yazıcı istasyonu: mutfak, döner, bar, kasa','станции печати: кухня, донер, бар, касса','басып шығару бекеті: асхана, дөнер, бар, касса','print stations: kitchen, doner, bar, till'],
+f_l4:['masadan sipariş, garson onaylı','заказ со стола, с подтверждением официанта','үстелден тапсырыс, даяшы растайды','table ordering, waiter approved'],
+v_t:['90 saniyede Easycafe','Easycafe за 90 секунд','Easycafe 90 секундта','Easycafe in 90 seconds'],
+v_d:['Garson siparişinden gün sonu raporuna kadar tüm akış. Altyazıyı dört dilde açabilirsiniz.','Весь путь от заказа официанта до отчёта в конце дня. Субтитры доступны на четырёх языках.','Даяшы тапсырысынан күн соңы есебіне дейінгі бүкіл жол. Субтитрлер төрт тілде қолжетімді.','The whole path from a waiter\'s order to the end-of-day report. Subtitles are available in four languages.'],
+v_n:['Videodaki ekranlar, fiş ve tutarlar örnek veridir.','Экраны, чеки и суммы в видео — примеры.','Бейнедегі экрандар, чектер және сомалар — үлгі деректер.','Screens, receipts and amounts in the video are sample data.'],
+v_cc:['Altyazı','Субтитры','Субтитрлер','Subtitles'],v_off:['Kapalı','Выкл.','Өшірулі','Off'],
+fe_t:['Kafenin her işi için bir ekran','Экран для каждой задачи кафе','Кафенің әр жұмысына арналған экран','A screen for every job in the cafe'],
+fl_t:['Bir siparişin yolculuğu','Путь одного заказа','Бір тапсырыстың жолы','The journey of one order'],
+r_t:['Kim ne görür?','Кто что видит?','Кім нені көреді?','Who sees what?'],
+r_n:['Görseller örnek verilerle hazırlanmış demo ekranlarıdır.','Изображения — демо-экраны с примерами данных.','Суреттер — үлгі деректері бар демо экрандар.','Images are demo screens with sample data.'],
+l_t:['Herkes kendi dilinde','Каждый на своём языке','Әркім өз тілінде','Everyone in their own language'],
+l_d:['Menü, sipariş ekranı, mutfak ve yönetim paneli Türkçe, Rusça, Kazakça ve İngilizce çalışır. Her çalışan ve her misafir dilini kendisi seçer. Ürün adları dört dilde saklanır.','Меню, экран заказов, кухня и панель управления работают на турецком, русском, казахском и английском. Каждый сотрудник и гость выбирает язык сам. Названия блюд хранятся на четырёх языках.','Мәзір, тапсырыс экраны, асхана және басқару панелі түрік, орыс, қазақ және ағылшын тілдерінде жұмыс істейді. Әр қызметкер мен қонақ тілді өзі таңдайды. Тағам атаулары төрт тілде сақталады.','The menu, order screen, kitchen and management panel run in Turkish, Russian, Kazakh and English. Each employee and guest picks their own language. Item names are stored in four languages.'],
+hw_t:['Fişler doğru yazıcıya gider','Чеки идут на нужный принтер','Чектер дұрыс принтерге барады','Tickets reach the right printer'],
+hw_d:['Sunucu fişi hazırlar, kafedeki bilgisayarda çalışan küçük yazıcı ajanı ağdaki termal yazıcıya gönderir. Yazıcı bağlı değilse fişler tarayıcıdan yazdırılır.','Сервер формирует чек, а небольшой агент на компьютере в кафе отправляет его на сетевой термопринтер. Если принтер недоступен, чек можно напечатать из браузера.','Сервер чекті дайындайды, кафедегі компьютердегі шағын агент оны желідегі термопринтерге жібереді. Принтер қосылмаса, чекті браузерден басуға болады.','The server builds the ticket and a small agent on a computer in the cafe sends it to the network thermal printer. If no printer is connected, tickets print from the browser.'],
+hw1:['ESC/POS uyumlu ağ yazıcıları (TCP 9100)','Сетевые принтеры с поддержкой ESC/POS (TCP 9100)','ESC/POS қолдайтын желілік принтерлер (TCP 9100)','Network printers that speak ESC/POS (TCP 9100)'],
+hw2:['58 mm ve 80 mm kâğıt','Бумага 58 и 80 мм','58 және 80 мм қағаз','58 mm and 80 mm paper'],
+hw3:['Türkçe (CP857) ve Kiril (CP866) karakter tabloları','Кодовые страницы турецкого (CP857) и кириллицы (CP866)','Түрік (CP857) және кирилл (CP866) кодтау кестелері','Turkish (CP857) and Cyrillic (CP866) code pages'],
+hw4:['Ödemede nakit çekmece açılır','Денежный ящик открывается при оплате','Төлем кезінде ақша жәшігі ашылады','The cash drawer opens on payment'],
+st_h:['İSTASYON','СТАНЦИЯ','БЕКЕТ','STATION'],st_h2:['NE BASAR','ЧТО ПЕЧАТАЕТ','НЕНІ БАСАДЫ','PRINTS'],
+st_k:['Yemekler, kahvaltı, çorba','Горячие блюда, завтраки, супы','Ыстық тағам, таңғы ас, сорпа','Hot dishes, breakfast, soups'],st_d:['Döner ürünleri','Блюда из донера','Дөнер өнімдері','Doner items'],st_b:['Çay, kahve, soğuk içecek','Чай, кофе, холодные напитки','Шай, кофе, салқын сусындар','Tea, coffee, cold drinks'],st_c:['Adisyon, fiskal fiş, Z raporu','Счёт, фискальный чек, Z-отчёт','Есеп, фискалды чек, Z есебі','Bill, fiscal receipt, Z report'],
+faq_t:['Sık sorulanlar','Частые вопросы','Жиі қойылатын сұрақтар','Questions'],
+c_t:['Kafenizde denemek ister misiniz?','Хотите попробовать в своём кафе?','Кафеңізде сынап көргіңіз келе ме?','Want to try it in your cafe?'],
+c_d:['Demoyu izleyin, sorularınızı iletin; kurulumu birlikte yapalım.','Посмотрите демо и задайте вопросы — настроим всё вместе.','Демоны көріп, сұрақтарыңызды жіберіңіз — орнатуды бірге жасаймыз.','Watch the demo, send your questions and we will set it up together.'],
+c_em:['E-posta','Эл. почта','Эл. пошта','Email'],c_ph:['Telefon','Телефон','Телефон','Phone'],
+ft:['Kafeler ve restoranlar için sipariş ve kasa sistemi.','Система заказов и кассы для кафе и ресторанов.','Кафелер мен мейрамханаларға арналған тапсырыс және касса жүйесі.','Ordering and till system for cafes and restaurants.']
+};
+const FEAT=[['order',['Masa siparişi','Заказ за столом','Үстел тапсырысы','Table orders'],['Garson telefonda ya da tabletten masayı seçer, ürünleri ekler, not yazar. Masa taşıma ve iptal de aynı ekranda.','Официант выбирает стол на телефоне или планшете, добавляет блюда и комментарии. Перенос стола и отмена на том же экране.','Даяшы телефоннан немесе планшеттен үстелді таңдап, тағам мен ескертпе қосады. Үстелді көшіру және болдырмау сол экранда.','The waiter picks a table on a phone or tablet, adds items and notes. Moving a table and cancelling are on the same screen.']],
+['qr',['QR menüden sipariş','Заказ по QR-меню','QR мәзірден тапсырыс','Ordering from the QR menu'],['Her masanın kendi QR kodu var. Misafir menüyü kendi dilinde açar ve sipariş verir; garson onaylayınca mutfağa gider.','У каждого стола свой QR-код. Гость открывает меню на своём языке и заказывает; после подтверждения официантом заказ уходит на кухню.','Әр үстелдің өз QR коды бар. Қонақ мәзірді өз тілінде ашып тапсырыс береді; даяшы растаған соң тапсырыс асханаға кетеді.','Every table has its own QR code. Guests open the menu in their language and order; once the waiter approves, it goes to the kitchen.']],
+['kitchen',['Mutfak ekranı','Экран кухни','Асхана экраны','Kitchen screen'],['Yeni sipariş sesle duyurulur. Kartlar bekleme süresine göre renk değiştirir, tek dokunuşla hazır olur ve garsona haber gider.','Новый заказ звучит сигналом. Карточки меняют цвет по времени ожидания, готово отмечается одним касанием, официант получает уведомление.','Жаңа тапсырыс дыбыспен хабарланады. Карточкалар күту уақытына қарай түсін өзгертеді, бір түртумен дайын болады, даяшыға хабар барады.','New orders sound an alert. Cards change colour with waiting time, one tap marks them ready and the waiter is notified.']],
+['print',['Termal yazıcı fişleri','Печать на термопринтеры','Термопринтер чектері','Thermal printer tickets'],['Mutfak, döner, bar ve kasa fişleri doğru yazıcıdan çıkar. 58 ve 80 mm kâğıt, Türkçe ve Kiril karakterler, nakit çekmece tetikleme.','Чеки кухни, донера, бара и кассы печатаются на своих принтерах. Бумага 58 и 80 мм, турецкие и кириллические символы, открытие денежного ящика.','Асхана, дөнер, бар және касса чектері өз принтерінен шығады. 58 және 80 мм қағаз, түрік және кирилл әріптері, ақша жәшігін ашу.','Kitchen, doner, bar and till tickets print on their own printers. 58 and 80 mm paper, Turkish and Cyrillic characters, cash drawer kick.']],
+['till',['Kasa ve hesap bölme','Касса и разделение счёта','Касса және есепті бөлу','Cashier and split bills'],['Ürün ürün ya da tüm masa tahsilatı, yüzde indirim, nakit, kart ve Glovo ödeme türleri. Büyük indirimler için patron yetkisi gerekir.','Оплата по позициям или всем столом, скидка в процентах, наличные, карта и Glovo. Крупные скидки только с правами владельца.','Тағам бойынша немесе бүкіл үстел бойынша төлем, пайыздық жеңілдік, қолма-қол, карта және Glovo. Үлкен жеңілдік иесінің рұқсатын қажет етеді.','Pay item by item or the whole table, percentage discounts, cash, card and Glovo. Large discounts need owner permission.']],
+['fiscal',['Webkassa fiskal fiş','Фискальный чек Webkassa','Webkassa фискалды чегі','Webkassa fiscal receipts'],['Kendi Webkassa bilgilerinizi girin, ödeme alınınca fiskal fiş oluşur. Bilgi girilmemişse sistem açıkça işaretli test fişi basar.','Введите данные вашей Webkassa, и после оплаты формируется фискальный чек. Без данных система печатает чек с явной пометкой «тест».','Webkassa деректеріңізді енгізіңіз, төлем алынған соң фискалды чек жасалады. Деректер болмаса, жүйе анық белгіленген сынақ чегін басады.','Enter your own Webkassa details and a fiscal receipt is created when payment is taken. Without them the system prints a clearly marked test receipt.']],
+['stock',['Stok ve reçete','Склад и рецептуры','Қор және рецепт','Stock and recipes'],['İçecek stoğu satıştan düşer. İsterseniz reçete sistemini açın, her yemek hammaddeyi gram gram stoktan eksiltsin; düşük stok uyarısı çıkar.','Остатки напитков списываются при продаже. При желании включите рецептуры: сырьё списывается по граммам, а при низком остатке приходит предупреждение.','Сусын қоры сатылғанда азаяды. Қаласаңыз рецепт жүйесін қосыңыз: шикізат грамм-грамм шегеріледі, қор аз болса ескерту шығады.','Drink stock drops as you sell. Turn on recipes and each dish deducts raw material by the gram, with low stock warnings.']],
+['report',['Z raporu ve CSV','Z-отчёт и CSV','Z есебі және CSV','Z report and CSV'],['Gün sonunda Z raporu alın; kayıtlar arşive taşınır, silinmez. Satış, ürün özeti, gider ve denetim kayıtlarını tarih aralığıyla CSV olarak indirin.','В конце дня получите Z-отчёт: записи уходят в архив, а не удаляются. Продажи, итоги по блюдам, расходы и журнал действий выгружаются в CSV за любой период.','Күн соңында Z есебін алыңыз; жазбалар мұрағатқа көшеді, жойылмайды. Сату, тағам қорытындысы, шығыс және аудит жазбалары кез келген кезеңге CSV болып жүктеледі.','Take the Z report at close; records move to an archive, never deleted. Download sales, item summary, expenses and audit records as CSV for any date range.']],
+['shield',['Roller ve denetim','Роли и журнал','Рөлдер және аудит','Roles and audit log'],['Garson, mutfak, kasa, usta ve patron yalnızca kendi işini görür. Şifreler şifreli saklanır, yanlış girişler kilitlenir, önemli işlemler kayda geçer.','Официант, кухня, касса, шеф и владелец видят только свои задачи. Пароли хранятся в зашифрованном виде, неверные попытки блокируются, важные действия попадают в журнал.','Даяшы, асхана, касса, шеф және иесі тек өз жұмысын көреді. Құпиясөздер шифрланып сақталады, қате әрекеттер бұғатталады, маңызды әрекеттер журналға жазылады.','Waiter, kitchen, cashier, chef and owner see only their own work. Passwords are stored hashed, repeated bad logins are locked out and key actions are logged.']]];
+const STEPS=[[['Sipariş alınır','Заказ принят','Тапсырыс қабылданады','The order comes in'],['Garson masadan ya da misafir QR ile siparişi verir.','Официант или гость через QR оформляет заказ.','Даяшы немесе қонақ QR арқылы тапсырыс береді.','A waiter, or a guest via QR, places the order.']],
+[['Mutfak ve bar hazırlar','Кухня и бар готовят','Асхана мен бар дайындайды','Kitchen and bar prepare'],['Fişler istasyon yazıcılarından çıkar, ekranda sayaç başlar.','Чеки печатаются на принтерах станций, на экране запускается таймер.','Чектер бекет принтерлерінен шығады, экранда таймер басталады.','Tickets print at each station and a timer starts on screen.']],
+[['Garson haber alır','Официант получает сигнал','Даяшыға хабар барады','The waiter is told'],['Hazır olan sipariş garsonun ekranında bildirimle görünür.','Готовый заказ появляется у официанта с уведомлением.','Дайын тапсырыс даяшы экранында хабарламамен көрінеді.','A ready order shows up on the waiter\'s screen with a notification.']],
+[['Kasa tahsil eder','Касса принимает оплату','Касса төлем алады','The till takes payment'],['İndirim, ödeme türü ve fiskal fiş tek ekranda.','Скидка, способ оплаты и фискальный чек на одном экране.','Жеңілдік, төлем түрі және фискалды чек бір экранда.','Discount, payment type and fiscal receipt on one screen.']],
+[['Gün sonu kapanır','День закрывается','Күн жабылады','The day closes'],['Z raporu alınır, kayıtlar arşivlenir, CSV dışa aktarılır.','Формируется Z-отчёт, записи архивируются, доступен экспорт в CSV.','Z есебі алынады, жазбалар мұрағатталады, CSV экспорты қолжетімді.','The Z report is taken, records archived, CSV export is ready.']]];
+const ROLES=[[['Garson','Официант','Даяшы','Waiter'],['Masa listesi, ürün ızgarası, sepet ve notlar. Bekleyen QR siparişleri onay kartı olarak düşer.','Список столов, сетка блюд, корзина и комментарии. QR-заказы приходят карточкой на подтверждение.','Үстелдер тізімі, тағам торы, себет және ескертпелер. QR тапсырыстар растау карточкасы болып түседі.','Table list, item grid, cart and notes. QR orders arrive as approval cards.']],
+[['Misafir','Гость','Қонақ','Guest'],['Telefondan menü, dört dil, sepet ve sipariş durumu. Uygulama kurmak gerekmez.','Меню в телефоне, четыре языка, корзина и статус заказа. Устанавливать приложение не нужно.','Телефондағы мәзір, төрт тіл, себет және тапсырыс күйі. Қосымша орнату қажет емес.','Menu on the phone, four languages, cart and order status. No app to install.']],
+[['Mutfak','Кухня','Асхана','Kitchen'],['İstasyona göre süzülmüş kartlar, bekleme sayacı, tek dokunuşla hazır ve toplu hazır.','Карточки по станциям, таймер ожидания, готово одним касанием и «всё готово».','Бекет бойынша сүзілген карточкалар, күту таймері, бір түртумен дайын және «бәрі дайын».','Cards filtered by station, a waiting timer, one-tap ready and ready-all.']],
+[['Kasa','Касса','Касса','Cashier'],['Açık hesaplar, ürün bazlı tahsilat, indirim, ödeme türü ve fiskal fiş. Nakit çekmece tutarı canlı görünür.','Открытые счета, оплата по позициям, скидка, способ оплаты и фискальный чек. Сумма в кассе видна в реальном времени.','Ашық есептер, тағам бойынша төлем, жеңілдік, төлем түрі және фискалды чек. Кассадағы ақша сомасы нақты уақытта көрінеді.','Open bills, per-item payment, discounts, payment type and fiscal receipt. The cash drawer total updates live.']],
+[['Patron','Владелец','Иесі','Owner'],['Günlük ciro, özellik anahtarları, menü ve masa yönetimi, personel, yazıcılar, raporlar ve dil seçimi.','Выручка за день, переключатели функций, управление меню и столами, персонал, принтеры, отчёты и выбор языка.','Күндік түсім, функция ауыстырғыштары, мәзір мен үстел басқару, қызметкерлер, принтерлер, есептер және тіл таңдау.','Daily revenue, feature switches, menu and table management, staff, printers, reports and language choice.']]];
+const FAQ=[[['Hangi cihazlarda çalışır?','На каких устройствах работает?','Қандай құрылғыларда жұмыс істейді?','Which devices does it run on?'],['Tarayıcısı olan her cihazda: telefon, tablet ve bilgisayar. Uygulama kurmak gerekmez.','На любом устройстве с браузером: телефон, планшет и компьютер. Устанавливать ничего не нужно.','Браузері бар кез келген құрылғыда: телефон, планшет және компьютер. Ештеңе орнату қажет емес.','On any device with a browser: phone, tablet or computer. Nothing to install.']],
+[['İnternet gerekli mi?','Нужен ли интернет?','Интернет қажет пе?','Does it need internet?'],['Evet. Sistem bulutta çalışır, bu yüzden kafede internet olmalı. Yazıcı ajanı kafedeki bilgisayarda çalışır ve yazıcılara yerel ağdan basar.','Да. Система работает в облаке, поэтому в кафе нужен интернет. Агент печати работает на компьютере в кафе и печатает на принтеры по локальной сети.','Иә. Жүйе бұлтта жұмыс істейді, сондықтан кафеде интернет болуы керек. Басып шығару агенті кафедегі компьютерде жұмыс істеп, принтерлерге жергілікті желі арқылы басады.','Yes. The system runs in the cloud, so the cafe needs internet. The print agent runs on a computer in the cafe and prints to the printers over the local network.']],
+[['Fiskal fiş nasıl çalışır?','Как работает фискальный чек?','Фискалды чек қалай жұмыс істейді?','How do fiscal receipts work?'],['Webkassa bilgilerinizi (token, kasa numarası, BİN/İİN) panelden girersiniz. Bilgi yoksa fişlerde "fiskal değil" uyarısı olur; böylece test ile gerçek karışmaz.','Вы вводите данные Webkassa (токен, номер кассы, БИН/ИИН) в панели. Без них на чеках печатается пометка «не фискальный», поэтому тест не спутать с реальным.','Webkassa деректерін (токен, касса нөмірі, БСН/ЖСН) панельде енгізесіз. Олар болмаса, чектерде «фискалды емес» белгісі шығады, сондықтан сынақ пен нақты чек шатаспайды.','You enter your Webkassa details (token, cash register number, BIN/IIN) in the panel. Without them receipts carry a "not fiscal" mark, so tests are never mistaken for real ones.']],
+[['Misafir sipariş verirse ne olur?','Что происходит, когда гость делает заказ?','Қонақ тапсырыс берсе не болады?','What happens when a guest orders?'],['Sipariş garsona onay kartı olarak düşer. Garson onaylayınca mutfağa gider, reddederse gitmez. QR sipariş özelliğini panelden kapatabilirsiniz.','Заказ приходит официанту карточкой на подтверждение. После подтверждения он уходит на кухню, при отклонении — нет. QR-заказы можно отключить в панели.','Тапсырыс даяшыға растау карточкасы болып түседі. Даяшы растаса, асханаға кетеді, қабылдамаса, кетпейді. QR тапсырысты панельден өшіруге болады.','The order reaches the waiter as an approval card. If approved it goes to the kitchen, if declined it does not. You can turn QR ordering off in the panel.']],
+[['Verilerimi dışarı alabilir miyim?','Можно ли выгрузить свои данные?','Деректерімді шығарып алуға бола ма?','Can I export my data?'],['Evet. Satışlar, ürün özeti, giderler, Z raporları ve menü CSV olarak iner ve Excel\'de doğrudan açılır.','Да. Продажи, итоги по блюдам, расходы, Z-отчёты и меню выгружаются в CSV и открываются в Excel.','Иә. Сату, тағам қорытындысы, шығыстар, Z есептері және мәзір CSV болып жүктеледі де, Excel-де тікелей ашылады.','Yes. Sales, item summary, expenses, Z reports and the menu download as CSV and open directly in Excel.']]];
+const NAMES=[['Tavuk Döner','Et Döner','Menemen','Çay'],['Куриный донер','Донер из говядины','Менемен','Чай'],['Тауық дөнері','Сиыр еті дөнері','Менемен','Шай'],['Chicken doner','Beef doner','Menemen','Tea']];
+const RC={tbl:['Masa','Стол','Үстел','Table'],wtr:['Garson: Ali','Официант: Али','Даяшы: Әли','Waiter: Ali'],tot:['TOPLAM','ИТОГО','БАРЛЫҒЫ','TOTAL'],smp:['ÖRNEK FİŞ · DEMO','ПРИМЕР ЧЕКА · ДЕМО','ЧЕК ҮЛГІСІ · ДЕМО','SAMPLE RECEIPT · DEMO']};
+const MINI=[['Sıcak içecekler','Горячие напитки','Ыстық сусындар','Hot drinks'],[['Çay','Latte','Baklava'],['Чай','Латте','Пахлава'],['Шай','Латте','Пахлава'],['Tea','Latte','Baklava']],['Siparişi gönder','Отправить заказ','Тапсырыс жіберу','Send order']];
+const WEL=['Hoş geldiniz','Добро пожаловать','Қош келдіңіз','Welcome'];const SKIP=['Atla','Пропустить','Өткізу','Skip'];
+const HELLO=['Merhaba','Привет','Сәлем','Hello'];
+
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+let lang=0;
+const pick=a=>a[lang];
+function detect(){const s=store.get('ec-lang');if(s&&L.includes(s))return L.indexOf(s);const n=(navigator.language||'en').slice(0,2).toLowerCase();return n==='tr'?0:n==='ru'?1:(n==='kk'?2:3)}
+
+/* ---- builders ---- */
+function buildStatic(){
+  $('#fgrid').innerHTML=FEAT.map(f=>`<div class="fc rv"><svg class="ic"><use href="#i-${f[0]}"/></svg><h3></h3><p></p></div>`).join('');
+  $('#flowEl').innerHTML=STEPS.map((s,i)=>`<div class="step rv ${i===0?'on':''}"><span class="n">${i+1}</span><h3></h3><p></p></div>`).join('');
+  $('#tabs').innerHTML=ROLES.map((r,i)=>`<button class="tab" role="tab" aria-selected="${i===0}" data-i="${i}"><h3></h3><p></p></button>`).join('');
+  $('#faqEl').innerHTML=FAQ.map((f,i)=>`<details class="rv" ${i===0?'open':''}><summary></summary><p></p></details>`).join('');
+  $('#mini').innerHTML=L.map((l,i)=>`<div class="mc" data-k="${i}"><span class="tag">${l==='kk'?'KZ':l.toUpperCase()}</span><b></b><ul><li></li><li></li><li></li></ul><div class="go"></div></div>`).join('');
+  $('#stations').innerHTML=`<div class="h"><span id="sth1"></span><span id="sth2"></span></div>`+['MUTFAK','DÖNER','BAR','KASA'].map((n,i)=>`<div class="srow" data-r="${i}"><b>${n}</b><span></span></div>`).join('');
+  $('#capChips').innerHTML=L.map((l,i)=>`<button class="chip" data-c="${i}" aria-pressed="false">${l==='kk'?'KZ':l.toUpperCase()}</button>`).join('')+`<button class="chip" data-c="-1" aria-pressed="false"></button>`;
+}
+function applyLang(){
+  const l=L[lang];document.documentElement.lang=l;store.set('ec-lang',l);
+  $$('[data-i]').forEach(e=>{const k=e.dataset.i;if(D[k])e.textContent=D[k][lang]});
+  $$('#langs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.l===l));
+  $$('#fgrid .fc').forEach((e,i)=>{e.querySelector('h3').textContent=FEAT[i][1][lang];e.querySelector('p').textContent=FEAT[i][2][lang]});
+  $$('#flowEl .step').forEach((e,i)=>{e.querySelector('h3').textContent=STEPS[i][0][lang];e.querySelector('p').textContent=STEPS[i][1][lang]});
+  $$('#tabs .tab').forEach((e,i)=>{e.querySelector('h3').textContent=ROLES[i][0][lang];e.querySelector('p').textContent=ROLES[i][1][lang]});
+  $$('#faqEl details').forEach((e,i)=>{e.querySelector('summary').textContent=FAQ[i][0][lang];e.querySelector('p').textContent=FAQ[i][1][lang]});
+  $$('#mini .mc').forEach((e,i)=>{e.querySelector('b').textContent=MINI[0][i];const li=e.querySelectorAll('li');MINI[1][i].forEach((t,j)=>li[j].textContent=t);e.querySelector('.go').textContent=MINI[2][i]});
+  $('#sth1').textContent=D.st_h[lang];$('#sth2').textContent=D.st_h2[lang];
+  ['st_k','st_d','st_b','st_c'].forEach((k,i)=>$$('#stations .srow span')[i].textContent=D[k][lang]);
+  $('#capChips [data-c="-1"]').textContent=D.v_off[lang];
+  syncCaps(lang);
+  buildContacts();
+  if(!document.documentElement.classList.contains('introing'))runReceipt();
+  const sk=$('#iskip');if(sk)sk.textContent=SKIP[lang]+' →';
+}
+function buildContacts(){
+  const c=CONFIG,a=[];
+  if(c.whatsapp)a.push(`<a href="https://wa.me/${c.whatsapp.replace(/\D/g,'')}" target="_blank" rel="noopener">WhatsApp</a>`);
+  if(c.telegram)a.push(`<a href="https://t.me/${c.telegram.replace('@','')}" target="_blank" rel="noopener">Telegram</a>`);
+  if(c.email)a.push(`<a href="mailto:${c.email}">${D.c_em[lang]}: ${c.email}</a>`);
+  if(c.phone)a.push(`<a href="tel:${c.phone.replace(/\s/g,'')}">${D.c_ph[lang]}: ${c.phone}</a>`);
+  $('#contacts').innerHTML=a.join('');$('#contacts').hidden=!a.length;
+  const lb=$('#liveBtn');if(c.appUrl){lb.href=c.appUrl;lb.hidden=false}
+}
+
+/* ---- receipt that prints ---- */
+let rTimer=0;
+function runReceipt(){
+  clearTimeout(rTimer);const p=$('#paper');p.classList.remove('cut');p.innerHTML='';
+  const n=NAMES[lang],money=v=>v.toLocaleString('ru-RU')+' ₸',it=[[2,2900],[1,3400],[1,1800],[2,300]];
+  const tot=it.reduce((a,x)=>a+x[0]*x[1],0);
+  const rows=[['c big','EASYCAFE',''],['c',RC.tbl[lang]+' 4 · 14:32',''],['c',RC.wtr[lang],''],['hr'],
+    ...it.map((x,i)=>['',x[0]+'× '+n[i],money(x[0]*x[1])]),['hr'],['tot',RC.tot[lang],money(tot)],['hr'],['c b',RC.smp[lang],'']];
+  const add=r=>{const d=document.createElement('div');d.className='pl '+(r[0]||'');if(r[0]!=='hr'){const a=document.createElement('span');a.textContent=r[1];d.appendChild(a);if(r[2]){const b=document.createElement('span');b.textContent=r[2];d.appendChild(b)}}p.appendChild(d)};
+  if(reduce){rows.forEach(add);return}
+  let i=0;(function next(){if(i<rows.length){add(rows[i++]);rTimer=setTimeout(next,rows[i-1][0]==='hr'?160:430)}else{rTimer=setTimeout(()=>{p.classList.add('cut');rTimer=setTimeout(runReceipt,1000)},3600)}})();
+}
+
+/* ---- video captions ---- */
+const vid=$('#vid');let capSel=0;
+function syncCaps(i){capSel=i;const tt=vid.textTracks;for(let k=0;k<tt.length;k++)tt[k].mode=(k===i)?'showing':'disabled';$$('#capChips .chip').forEach(c=>c.setAttribute('aria-pressed',Number(c.dataset.c)===i))}
+vid.addEventListener('loadedmetadata',()=>syncCaps(capSel));
+/* captions are plain text files turned into WebVTT blobs, so any static host can serve them */
+$$('#vid track').forEach(t=>{fetch(t.dataset.src).then(r=>r.text()).then(x=>{t.src=URL.createObjectURL(new Blob([x],{type:'text/vtt'}));setTimeout(()=>syncCaps(capSel),50)}).catch(()=>{})});
+$('#capChips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(b)syncCaps(Number(b.dataset.c))});
+
+/* ---- screens tabs ---- */
+let tabI=0,tabTimer=0,tabStart=0,tabHold=false;
+function showTab(i){tabI=i;$$('#tabs .tab').forEach((t,k)=>t.setAttribute('aria-selected',k===i));$$('#shots img').forEach((m,k)=>m.classList.toggle('on',k===i));tabStart=performance.now()}
+$('#tabs').addEventListener('click',e=>{const t=e.target.closest('.tab');if(t){tabHold=true;showTab(Number(t.dataset.i))}});
+function tabTick(now){const el=$('#timer');if(!tabHold&&!reduce){const k=Math.min(1,(now-tabStart)/6500);el.style.width=(k*100)+'%';if(k>=1)showTab((tabI+1)%ROLES.length)}else el.style.width=0;requestAnimationFrame(tabTick)}
+
+/* ---- languages cards + hello + stations cycle ---- */
+let hi=0;
+function helloTick(){const h=$('#hello');h.innerHTML=`<span>${HELLO[hi%4]}</span>`;$$('#mini .mc').forEach((m,i)=>m.classList.toggle('on',i===hi%4));$$('#stations .srow').forEach((r,i)=>r.classList.toggle('on',i===hi%4));hi++}
+
+/* ---- flow progress ---- */
+function flowTick(){const f=$('#flowEl'),r=f.getBoundingClientRect(),vh=innerHeight;const p=Math.max(0,Math.min(1,(vh*.72-r.top)/(r.height+vh*.1)));f.style.setProperty('--p',p.toFixed(3));$$('#flowEl .step').forEach((s,i)=>s.classList.toggle('on',p>=i/STEPS.length-.02||i===0))}
+addEventListener('scroll',()=>requestAnimationFrame(flowTick),{passive:true});
+
+/* ---- reveal ---- */
+function setupReveal(){const els=$$('.rv');if(!('IntersectionObserver' in window))return;const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.remove('pre');io.unobserve(e.target)}}),{threshold:.12});
+  els.forEach(e=>{const r=e.getBoundingClientRect();if(r.top>innerHeight*.92){e.classList.add('pre');io.observe(e)}})}
+
+/* ---- theme ---- */
+function effectiveDark(){const t=document.documentElement.dataset.theme;return t?t==='dark':matchMedia('(prefers-color-scheme:dark)').matches}
+$('#themeBtn').addEventListener('click',()=>{const t=effectiveDark()?'light':'dark';document.documentElement.dataset.theme=t;store.set('ec-theme',t)});
+{const t=store.get('ec-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}
+
+/* ---- opening ---- */
+function runIntro(){
+  const root=document.documentElement;if(!root.classList.contains('introing'))return;
+  const ov=$('#intro'),pp=$('#ipaper'),n=NAMES[lang],money=v=>v.toLocaleString('ru-RU')+' ₸';
+  const rows=[['c big','EASYCAFE'],...WEL.map((w,i)=>['g',w,['TR','RU','KZ','EN'][i]]),['hr'],['',  '2× '+n[0],money(5800)],['','1× '+n[1],money(3400)],['','2× '+n[3],money(600)],['hr'],['tot',RC.tot[lang],money(9800)]];
+  const T=[];let done=false,i=0;
+  const add=r=>{const d=document.createElement('div');d.className='pl '+(r[0]||'');if(r[0]!=='hr'){const a=document.createElement('span');a.textContent=r[1];d.appendChild(a);if(r[2]){const b=document.createElement('span');b.textContent=r[2];if(r[0]==='g')b.className='tg';d.appendChild(b)}}pp.appendChild(d)};
+  function finish(){if(done)return;done=true;T.forEach(clearTimeout);try{sessionStorage.setItem('ec-intro','1')}catch(e){}
+    pp.classList.add('cut');setTimeout(()=>ov.classList.add('out'),260);
+    setTimeout(()=>{root.classList.remove('heropre');root.classList.add('hero-in');runReceipt()},700);
+    setTimeout(()=>{root.classList.remove('introing');scrollTo(0,0)},1500)}
+  (function next(){if(done)return;if(i<rows.length){add(rows[i++]);T.push(setTimeout(next,rows[i-1][0]==='hr'?140:rows[i-1][0]==='g'?420:330))}else T.push(setTimeout(finish,900))})();
+  $('#iskip').addEventListener('click',finish);addEventListener('keydown',e=>{if(e.key==='Escape')finish()});
+  T.push(setTimeout(finish,9000));
+}
+
+/* ---- init ---- */
+$('#langs').addEventListener('click',e=>{const b=e.target.closest('button');if(b){lang=L.indexOf(b.dataset.l);applyLang()}});
+buildStatic();lang=detect();applyLang();setupReveal();flowTick();showTab(0);runIntro();
+if(!reduce){requestAnimationFrame(tabTick);setInterval(helloTick,2200)}
+helloTick();
+</script>
